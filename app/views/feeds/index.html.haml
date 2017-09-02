@@ -1,16 +1,15 @@
-.container
-  %h1= 'Feeds'
+%h1= 'Feeds'
 
-  %table.table.table-striped.table-bordered.table-hover.table-condensed
-    %thead
+%table.table.table-striped.table-bordered.table-hover.table-condensed
+  %thead
+    %tr
+      %th TITLE
+      %th URL
+      %th AGGREGATION?
+  %tbody
+    -# TODO フラグメントに切り出し
+    - @feeds.each do |f|
       %tr
-        %th TITLE
-        %th URL
-        %th AGGREGATION?
-    %tbody
-      -# TODO フラグメントに切り出し
-      - @feeds.each do |f|
-        %tr
-          %td= f.title
-          %td= f.url
-          %td= f.aggregation?
+        %td= f.title
+        %td= f.url
+        %td= f.aggregation?
