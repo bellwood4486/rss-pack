@@ -1,5 +1,6 @@
 %h1= 'Feeds'
 
+= link_to '追加', new_feed_path
 %table.table.table-striped.table-bordered.table-hover.table-condensed
   %thead
     %tr
@@ -9,7 +10,9 @@
   %tbody
     -# TODO フラグメントに切り出し
     - @feeds.each do |f|
-      %tr
-        %td= f.title
-        %td= f.url
-        %td= f.aggregation?
+      - unless f.aggregation?
+        %tr
+          %td= f.title
+          %td= f.url
+          %td= f.aggregation?
+          %td= link_to '削除', f, method: :delete, data: { confirm: 'Are you sure?'}
