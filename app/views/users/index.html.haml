@@ -1,0 +1,14 @@
+%h1= 'Users'
+
+%table.table.table-striped.table-bordered.table-hover.table-condensed
+  %thead
+    %tr
+      %th EMAIL
+      %th 登録日時
+  %tbody
+    -# TODO フラグメントに切り出し
+    - @users.each do |user|
+      %tr
+        %td= user.email
+        %td= user.created_at
+        %td= link_to '削除', user, method: :delete, data: { confirm: 'Are you sure?'}

@@ -2,7 +2,7 @@ class FeedsController < ApplicationController
   before_action :load_feed, only: %i(destroy)
 
   def index
-    @feeds = Feed.all
+    @feeds = current_user.feeds
   end
 
   def new
