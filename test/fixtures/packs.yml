@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  token: MyString
+  rss_token: MyString
   user: one
 
 two:
-  token: MyString
+  rss_token: MyString
   user: two

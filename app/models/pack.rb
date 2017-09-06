@@ -14,7 +14,7 @@ class Pack < ApplicationRecord
   private
 
   def create_rss_token
-    self.token = Pack.new_token
+    self.rss_token = Pack.new_token
   end
 
   def create_rss_content
