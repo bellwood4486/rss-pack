@@ -4,6 +4,10 @@ class PacksController < ApplicationController
   def show
   end
 
+  def rss
+    pack = Pack.find_by(token: params[:token])
+  end
+
   private
 
   def load_pack
