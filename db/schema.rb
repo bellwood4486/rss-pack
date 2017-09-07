@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170907143219) do
+ActiveRecord::Schema.define(version: 20170907151140) do
 
   create_table "feeds", force: :cascade do |t|
     t.string "url"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20170907143219) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "rss_content"
+    t.datetime "rss_refreshed_at"
     t.index ["user_id"], name: "index_packs_on_user_id"
   end
 
