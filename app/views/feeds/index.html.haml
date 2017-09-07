@@ -6,13 +6,10 @@
     %tr
       %th TITLE
       %th URL
-      %th AGGREGATION?
   %tbody
     -# TODO フラグメントに切り出し
-    - @feeds.each do |f|
-      - unless f.aggregation?
-        %tr
-          %td= f.title
-          %td= f.url
-          %td= f.aggregation?
-          %td= link_to '削除', f, method: :delete, data: { confirm: 'Are you sure?'}
+    - @feeds.each do |feed|
+      %tr
+        %td= feed.title
+        %td= feed.url
+        %td= link_to '削除', feed, method: :delete, data: { confirm: 'Are you sure?'}

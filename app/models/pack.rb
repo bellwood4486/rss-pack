@@ -7,7 +7,7 @@ class Pack < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
-  def refresh_rss_content
+  def refresh
     self.rss_content = create_rss_content
   end
 
@@ -18,8 +18,9 @@ class Pack < ApplicationRecord
   end
 
   def create_rss_content
-    res = Net::HTTP.get(
-      URI.parse('https://bellwood4486.blogspot.com/feeds/posts/default?alt=rss'))
-    res.force_encoding("UTF-8")
+    feeds.first.content
+    # res = Net::HTTP.get(
+    #   URI.parse('https://bellwood4486.blogspot.com/feeds/posts/default?alt=rss'))
+    # res.force_encoding('UTF-8')
   end
 end
