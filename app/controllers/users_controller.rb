@@ -10,7 +10,6 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_create_params)
-    pack = user.packs.build
     if @user.save
       redirect_to pack_url(pack), notice: 'ユーザー登録が完了しました！さぁフィードを追加しましょう！'
     else
