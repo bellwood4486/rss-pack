@@ -6,8 +6,6 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
   resources :users, only: %i[index new create destroy]
-  resources :packs, only: %i[show] do
-    resources :feeds, shallow: true
-  end
+  resources :feeds
   resources :rss, only: %i[show]
 end

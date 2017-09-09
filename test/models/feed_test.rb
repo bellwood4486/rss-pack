@@ -9,6 +9,7 @@
 #  updated_at :datetime         not null
 #  pack_id    :integer
 #  content    :text
+#  user_id    :integer
 #
 
 require 'test_helper'

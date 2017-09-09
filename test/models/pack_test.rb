@@ -9,6 +9,7 @@
 #  updated_at       :datetime         not null
 #  rss_content      :text
 #  rss_refreshed_at :datetime
+#  name             :string
 #
 
 require 'test_helper'

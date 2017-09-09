@@ -1,5 +1,7 @@
 class StaticPagesController < ApplicationController
   def home
-    @packs = current_user.packs if logged_in?
+    if logged_in?
+      @feeds = Feed.where(user: current_user)
+    end
   end
 end

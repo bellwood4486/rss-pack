@@ -9,10 +9,12 @@
 #  updated_at :datetime         not null
 #  pack_id    :integer
 #  content    :text
+#  user_id    :integer
 #
 
 class Feed < ApplicationRecord
   belongs_to :pack
+  belongs_to :user
   validates :url, presence: true
   validates :title, presence: true
   validates :content, presence: true

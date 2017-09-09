@@ -9,12 +9,13 @@
 #  updated_at       :datetime         not null
 #  rss_content      :text
 #  rss_refreshed_at :datetime
+#  name             :string
 #
 
 class Pack < ApplicationRecord
   belongs_to :user
   has_many :feeds
-  before_create :create_rss_token
+  after_initialize :create_rss_token, if: -> { rss_token.nil? }
   validates :rss_token, presence: true
 
   def self.new_token

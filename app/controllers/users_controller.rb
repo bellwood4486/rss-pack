@@ -9,6 +9,7 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_create_params)
+    @user.packs.build(name: 'default')
     if @user.save
       log_in @user
       redirect_to root_url, notice: 'ユーザー登録が完了しました！'
