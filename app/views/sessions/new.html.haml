@@ -1,0 +1,8 @@
+%h1 Log in
+
+= form_for :session, url: login_path do |f|
+  = f.label :email
+  = f.email_field :email
+  = f.submit 'Log in'
+%p
+  New user? #{link_to 'Sign up now!', signup_path}

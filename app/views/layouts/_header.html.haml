@@ -1,0 +1,10 @@
+%span
+  = link_to 'Home', root_path
+
+- if logged_in?
+  |
+  %span
+    = @current_user.email
+  |
+  %span
+    = link_to 'Logout', logout_path, method: :delete

@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-
   def index
     @users = User.all
   end
@@ -11,7 +10,8 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_create_params)
     if @user.save
-      redirect_to pack_url(pack), notice: 'ユーザー登録が完了しました！さぁフィードを追加しましょう！'
+      log_in @user
+      redirect_to root_url, notice: 'ユーザー登録が完了しました！'
     else
       render :new
     end
@@ -25,6 +25,7 @@ class UsersController < ApplicationController
   private
 
   def user_create_params
-    params.require(:user).permit(:email)
+    params.require(:user).permit(:email,
+                                 :password, :password_confirmation)
   end
 end
