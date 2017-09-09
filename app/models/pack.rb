@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: packs
+#
+#  id               :integer          not null, primary key
+#  rss_token        :string
+#  user_id          :integer
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  rss_content      :text
+#  rss_refreshed_at :datetime
+#
+
 class Pack < ApplicationRecord
   belongs_to :user
   has_many :feeds
