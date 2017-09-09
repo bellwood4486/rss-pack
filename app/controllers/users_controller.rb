@@ -14,7 +14,7 @@ class UsersController < ApplicationController
       log_in @user
       redirect_to root_url, notice: 'ユーザー登録が完了しました！'
     else
-      render :new
+      render 'new'
     end
   end
 
