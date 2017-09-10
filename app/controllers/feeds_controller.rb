@@ -12,7 +12,7 @@ class FeedsController < ApplicationController
   def create
     @feed = current_user.feeds.build(feed_create_params)
     @feed.pack = current_user.packs.first # :TODO 決め打ちをあとでなおす
-    @feed.refresh_rss!
+    @feed.refresh_rss
     if @feed.save
       redirect_to feeds_url, notice: '追加しました'
     else

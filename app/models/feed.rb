@@ -24,10 +24,14 @@ class Feed < ApplicationRecord
   validates :title, presence: true
   validates :content, presence: true
 
+  def refresh_rss
+    # :TODO ETag/modified_dateを使ったチェックを入れる
+    assign_attributes(rss_refresh_attributes)
+  end
+
   def refresh_rss!
     # :TODO ETag/modified_dateを使ったチェックを入れる
-    update! content: download_content, title: parse_title(content),
-            rss_refreshed_at: Time.zone.now
+    update_attibutes!(rss_refresh_attributes)
   end
 
   private
@@ -43,5 +47,10 @@ class Feed < ApplicationRecord
 
   def clear_pack_rss
     pack.clear_rss
+  end
+
+  def rss_refresh_attributes
+    { content: download_content, title: parse_title(content),
+      rss_refreshed_at: Time.zone.now }
   end
 end
