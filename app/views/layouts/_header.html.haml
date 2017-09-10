@@ -3,18 +3,17 @@
     = link_to 'rss pack', root_path, id: 'logo'
     %nav
       %ul.nav.navbar-nav.navbar-right
-        %li= link_to 'Home', root_path
         - if logged_in?
           %li= link_to 'フィード登録', new_feed_path
           %li.dropdown
             %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
-              Account
+              = "#{current_user.email}"
               %b.caret
             %ul.dropdown-menu
               %li= link_to "Profile", '#'
               %li= link_to "Settings", '#'
               %li.divider
               %li
-                = link_to "Log out", logout_path, method: :delete
+                = link_to 'ログアウト', logout_path, method: :delete
         - else
-          %li= link_to 'Log in', login_path
+          %li= link_to 'ログイン', login_path
