@@ -12,6 +12,8 @@
 #  name             :string
 #
 
+require 'rss'
+
 class Pack < ApplicationRecord
   belongs_to :user
   has_many :feeds
@@ -43,10 +45,27 @@ class Pack < ApplicationRecord
   end
 
   def pack_feeds
-    feeds.each do |feed|
-      feed.refresh_rss!
+    merged_rss = RSS::Maker.make('2.0') do |maker|
+      maker.channel.title = "#{user.email} - RssPack"
+      # :TODO linkを見直す
+      maker.channel.link = 'http://localhost:3000'
+      maker.channel.description = "#{feeds.count}個のフィードを1つにまとめたRSSです。"
+
+      maker.items.do_sort = true
+
+      feeds.each do |feed|
+        feed.refresh_rss!
+        rss = RSS::Parser.parse(feed.content)
+        rss.channel.items.each do |item|
+          next if item.link.nil?
+          maker.items.new_item do |new_item|
+            new_item.title = item.title ||= 'No title'
+            new_item.link = item.link
+            new_item.date = item.date
+          end
+        end
+      end
     end
-    # :TODO あとで実装
-    feeds.first.content
+    merged_rss.to_s
   end
 end

@@ -18,6 +18,7 @@ require 'net/http'
 class Feed < ApplicationRecord
   belongs_to :pack
   belongs_to :user
+  before_create :clear_pack_rss
   before_destroy :clear_pack_rss
   validates :url, presence: true
   validates :title, presence: true
