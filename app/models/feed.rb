@@ -17,6 +17,7 @@ require 'net/http'
 class Feed < ApplicationRecord
   belongs_to :pack
   belongs_to :user
+  before_destroy :clear_pack_rss
   validates :url, presence: true
   validates :title, presence: true
   validates :content, presence: true
@@ -35,5 +36,9 @@ class Feed < ApplicationRecord
 
   def parse_title(content)
     "title of #{url}"
+  end
+
+  def clear_pack_rss
+    pack.clear_rss
   end
 end

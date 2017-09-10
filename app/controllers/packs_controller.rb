@@ -16,7 +16,7 @@ class PacksController < ApplicationController
 
   def rss
     pack = Pack.find_by(rss_token: params[:token])
-    pack.refresh_rss
+    pack.refresh_rss_if_outdated
     render xml: pack.rss_content.to_s
   end
 

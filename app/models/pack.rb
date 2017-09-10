@@ -22,11 +22,13 @@ class Pack < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
-  def refresh_rss
+  def refresh_rss_if_outdated
     return if rss_fresh?
-    self.rss_content = pack_feed_contents
-    self.rss_refreshed_at = Time.zone.now
-    save
+    update! rss_content: pack_feeds, rss_refreshed_at: Time.zone.now
+  end
+
+  def clear_rss
+    update! rss_content: nil, rss_refreshed_at: nil
   end
 
   private
@@ -40,10 +42,8 @@ class Pack < ApplicationRecord
     self.rss_token = Pack.new_token
   end
 
-  def pack_feed_contents
+  def pack_feeds
+    # TODO あとで実装
     feeds.first.content
-    # res = Net::HTTP.get(
-    #   URI.parse('https://bellwood4486.blogspot.com/feeds/posts/default?alt=rss'))
-    # res.force_encoding('UTF-8')
   end
 end
