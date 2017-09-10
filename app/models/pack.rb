@@ -43,6 +43,9 @@ class Pack < ApplicationRecord
   end
 
   def pack_feeds
+    feeds.each do |feed|
+      feed.refresh_rss!
+    end
     # :TODO あとで実装
     feeds.first.content
   end

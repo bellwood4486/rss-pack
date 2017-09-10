@@ -23,12 +23,10 @@ class Feed < ApplicationRecord
   validates :title, presence: true
   validates :content, presence: true
 
-  def refresh
+  def refresh_rss!
     # :TODO ETag/modified_dateを使ったチェックを入れる
     update! content: download_content, title: parse_title(content),
             rss_refreshed_at: Time.zone.now
-    # self.content = download_content
-    # self.title = parse_title content
   end
 
   private
