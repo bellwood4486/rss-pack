@@ -12,6 +12,8 @@
 #  user_id    :integer
 #
 
+require 'net/http'
+
 class Feed < ApplicationRecord
   belongs_to :pack
   belongs_to :user
