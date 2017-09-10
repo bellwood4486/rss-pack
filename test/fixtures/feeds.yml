@@ -2,14 +2,15 @@
 #
 # Table name: feeds
 #
-#  id         :integer          not null, primary key
-#  url        :string
-#  title      :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  pack_id    :integer
-#  content    :text
-#  user_id    :integer
+#  id               :integer          not null, primary key
+#  url              :string
+#  title            :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  pack_id          :integer
+#  content          :text
+#  user_id          :integer
+#  rss_refreshed_at :datetime
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

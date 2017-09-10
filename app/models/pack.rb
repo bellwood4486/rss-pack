@@ -43,7 +43,7 @@ class Pack < ApplicationRecord
   end
 
   def pack_feeds
-    # TODO あとで実装
+    # :TODO あとで実装
     feeds.first.content
   end
 end

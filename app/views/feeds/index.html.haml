@@ -4,12 +4,14 @@
 %table.table.table-striped.table-bordered.table-hover.table-condensed
   %thead
     %tr
-      %th TITLE
-      %th URL
+      %th タイトル
+      %th 登録日時
+      %th フィード最終取得日時
   %tbody
-    -# TODO フラグメントに切り出し
+    -# :TODO フラグメントに切り出し
     - @feeds.each do |feed|
       %tr
-        %td= feed.title
-        %td= feed.url
+        %td= link_to feed.title, url: feed.url
+        %td= feed.created_at
+        %td= feed.rss_refreshed_at
         %td= link_to '削除', feed, method: :delete, data: { confirm: 'Are you sure?'}

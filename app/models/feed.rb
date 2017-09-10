@@ -2,14 +2,15 @@
 #
 # Table name: feeds
 #
-#  id         :integer          not null, primary key
-#  url        :string
-#  title      :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  pack_id    :integer
-#  content    :text
-#  user_id    :integer
+#  id               :integer          not null, primary key
+#  url              :string
+#  title            :string
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  pack_id          :integer
+#  content          :text
+#  user_id          :integer
+#  rss_refreshed_at :datetime
 #
 
 require 'net/http'
@@ -23,8 +24,11 @@ class Feed < ApplicationRecord
   validates :content, presence: true
 
   def refresh
-    self.content = download_content
-    self.title = parse_title content
+    # :TODO ETag/modified_dateを使ったチェックを入れる
+    update! content: download_content, title: parse_title(content),
+            rss_refreshed_at: Time.zone.now
+    # self.content = download_content
+    # self.title = parse_title content
   end
 
   private
@@ -34,7 +38,7 @@ class Feed < ApplicationRecord
     res.force_encoding('UTF-8')
   end
 
-  def parse_title(content)
+  def parse_title(_content)
     "title of #{url}"
   end
 
