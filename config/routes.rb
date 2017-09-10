@@ -7,5 +7,5 @@ Rails.application.routes.draw do
   delete 'logout', to: 'sessions#destroy'
   resources :users, only: %i[index new create destroy]
   resources :feeds
-  resources :rss, only: %i[show]
+  get 'rss/:token', to: 'packs#rss', as: 'rss'
 end
