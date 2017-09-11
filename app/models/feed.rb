@@ -34,12 +34,19 @@ class Feed < ApplicationRecord
     update_attibutes!(rss_refresh_attributes)
   end
 
-  private
 
   def download_content
-    res = Net::HTTP.get(URI.parse(url))
-    res.force_encoding('UTF-8')
+    uri = URI.parse(url)
+    req = Net::HTTP::Get.new(uri.path)
+    req['If-Modified-Since'] = Time.zone.now.rfc2822
+    req['Etag'] = ''
+    res = Net::HTTP.start(uri.host, uri.port) { |http|
+      http.request(req)
+    }
+    res.body.force_encoding('UTF-8')
   end
+
+  private
 
   def parse_title(_content)
     "title of #{url}"
