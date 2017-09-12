@@ -11,6 +11,8 @@
 #  content          :text
 #  user_id          :integer
 #  rss_refreshed_at :datetime
+#  etag             :string
+#  last_modified    :string
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: feeds
@@ -11,6 +13,8 @@
 #  content          :text
 #  user_id          :integer
 #  rss_refreshed_at :datetime
+#  etag             :string
+#  last_modified    :string
 #
 
 require 'net/http'
@@ -34,19 +38,31 @@ class Feed < ApplicationRecord
     update_attibutes!(rss_refresh_attributes)
   end
 
+  private
 
-  def download_content
+  def fetch_content
     uri = URI.parse(url)
     req = Net::HTTP::Get.new(uri.path)
-    req['If-Modified-Since'] = Time.zone.now.rfc2822
-    req['Etag'] = ''
-    res = Net::HTTP.start(uri.host, uri.port) { |http|
+    req['If-None-Match'] = etag
+    res = Net::HTTP.start(uri.host, uri.port,
+                          use_ssl: uri.scheme == 'https') do |http|
+      http.open_timeout = 5
+      http.read_timeout = 10
       http.request(req)
-    }
-    res.body.force_encoding('UTF-8')
-  end
+    end
 
-  private
+    case res
+    when Net::HTTPNotModified
+      content # 前回保存しておいたものを返す
+    when Net::HTTPSuccess
+      update_attributes!(last_modified: res['Last-Modified'],
+                         etag: res['Etag'],
+                         content: res.body.force_encoding('UTF-8'))
+      content
+    end
+  rescue
+    nil
+  end
 
   def parse_title(_content)
     "title of #{url}"
@@ -57,7 +73,7 @@ class Feed < ApplicationRecord
   end
 
   def rss_refresh_attributes
-    { content: download_content, title: parse_title(content),
+    { content: fetch_content, title: parse_title(content),
       rss_refreshed_at: Time.zone.now }
   end
 end
