@@ -55,7 +55,7 @@ class Pack < ApplicationRecord
 
       feeds.each do |feed|
         feed.refresh_rss!
-        rss = RSS::Parser.parse(feed.content)
+        rss = RSS::Parser.parse(feed.content).to_feed('rss2.0')
         rss.channel.items.each do |item|
           next if item.link.nil?
           maker.items.new_item do |new_item|

@@ -16,34 +16,39 @@
 #  title        :string
 #
 
+require 'net/http'
+
 class RssFeed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
   belongs_to :blog
   after_initialize :refresh, if: -> { content.nil? }
   before_save :update_refreshed_time, if: -> { content_changed? }
-  validates :url, presence: true
   validates :content_type, presence: true
+  validates :url, presence: true
+  validates :title, presence: true
 
   def refresh
-    assign_attributes(refresh_attributes)
+    assign_attributes(content: fetch_content)
   end
 
   def refresh!
-    update_attibutes!(refresh_attributes)
+    update_attibutes!(content: fetch_content)
+  end
+
+  def rss20
+    parse_as_rss20(content)
   end
 
   private
-
-  def refresh_attributes
-    { content: fetch_content, title: title_of(content) }
-  end
 
   def fetch_content
     uri = URI.parse(url)
     req = Net::HTTP::Get.new(uri.path)
     req['If-None-Match'] = etag
-    res = Net::HTTP.start(uri.host, uri.port,
-                          use_ssl: uri.scheme == 'https') do |http|
+    res = Net::HTTP.start(
+      uri.host, uri.port,
+      use_ssl: uri.scheme == 'https'
+    ) do |http|
       http.open_timeout = 5
       http.read_timeout = 10
       http.request(req)
@@ -53,20 +58,20 @@ class RssFeed < ApplicationRecord
     when Net::HTTPNotModified
       content # 前回保存しておいたものを返して無駄な通信を避ける
     when Net::HTTPSuccess
-      update_attributes!(last_modified: res['Last-Modified'],
-                         etag: res['Etag'],
-                         content: res.body.force_encoding('UTF-8'))
+      self.etag = res['Etag']
+      self.content = res.body.force_encoding('UTF-8')
       content
     end
-  rescue
-    nil
   end
 
-  def title_of(content)
-    # :TODO nokogiriでパースする
-    'dummy title'
-  rescue
-    return DEFAULT_TITLE
+  def parse_as_rss20(rss_source)
+    rss = nil
+    begin
+      rss = RSS::Parser.parse(rss_source)
+    rescue RSS::InvalidRSSError
+      rss = RSS::Parser.parse(rss_source, false)
+    end
+    rss.to_rss('2.0')
   end
 
   def update_refreshed_time
