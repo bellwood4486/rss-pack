@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
   resources :users, only: %i[index new create destroy]
+  resources :blogs do
+    collection do
+      post 'confirm'
+    end
+  end
   resources :feeds
   get 'rss/:token', to: 'packs#rss', as: 'rss'
 end
