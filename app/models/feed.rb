@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: feeds
@@ -9,11 +8,11 @@
 #  title        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  pack_id      :integer
 #  content      :text
 #  refreshed_at :datetime
 #  etag         :string
 #  content_type :string
+#  user_id      :integer
 #
 
 require 'net/http'
@@ -21,7 +20,7 @@ require 'open-uri'
 
 class Feed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
-  belongs_to :pack
+  has_and_belongs_to_many :packs
   after_initialize :refresh, if: -> { content.nil? }
   before_save :update_refreshed_time, if: -> { content_changed? }
   before_create :clear_pack_rss

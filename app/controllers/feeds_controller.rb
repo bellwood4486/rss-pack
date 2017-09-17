@@ -1,12 +1,23 @@
+# frozen_string_literal: true
+
 class FeedsController < ApplicationController
-  before_action :load_feed, only: %i(destroy)
+  before_action :load_feed, only: %i[destroy]
 
   def index
     @feeds = current_user.feeds
   end
 
   def new
-    @feed = Feed.new
+    @feed_source = FeedSource.new
+  end
+
+  def select
+    @feed_source = FeedSource.new(url: params[:feed_source][:url])
+    if @feed_source.valid?
+      @feeds = Feed.discover(@feed_source.url)
+    else
+      render 'new'
+    end
   end
 
   def create

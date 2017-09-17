@@ -7,11 +7,11 @@
 #  title        :string
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  pack_id      :integer
 #  content      :text
 #  refreshed_at :datetime
 #  etag         :string
 #  content_type :string
+#  user_id      :integer
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

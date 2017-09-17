@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: packs
@@ -16,7 +18,7 @@ require 'rss'
 
 class Pack < ApplicationRecord
   belongs_to :user
-  has_many :feeds
+  has_and_belongs_to_many :feeds
   after_initialize :create_rss_token, if: -> { rss_token.nil? }
   validates :rss_token, presence: true
 
