@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: blogs
@@ -11,31 +13,49 @@
 #  updated_at :datetime         not null
 #
 
+require 'open-uri'
+
 class Blog < ApplicationRecord
   belongs_to :pack
   belongs_to :user
   has_one :rss_feed, dependent: :destroy
-
+  attr_reader :feeds
   before_create :clear_pack_rss
   before_destroy :clear_pack_rss
   validates :url, presence: true
   validates :title, presence: true
 
-  def fetch_feeds
-    feed1 = Feed.new(url: 'hoge', content_type: 'fuga')
-    feed2 = Feed.new(url: 'foo', content_type: 'bar')
-    [feed1, feed2]
+  def parse
+    html_doc = fetch(url)
+    self.title = html_doc.title
+    @feeds = parse_feeds(html_doc)
+  end
+
+  def parse_feeds(html_doc)
+    feeds = []
+    html_doc.xpath("//link[@rel='alternate']").each do |link|
+      attrs = link.attributes
+      feeds << RssFeed.new(
+        content_type: attrs['type']&.value,
+        title: attrs['title']&.value,
+        url: attrs['href']&.value
+      )
+    end
+    feeds
   end
 
   private
 
-
-  def parse_title(_content)
-    "title of #{url}"
+  def fetch(url)
+    charset = nil
+    html = open(url) do |f|
+      charset = f.charset
+      f.read
+    end
+    Nokogiri::HTML.parse(html, nil, charset)
   end
 
   def clear_pack_rss
     pack.clear_rss
   end
-
 end
