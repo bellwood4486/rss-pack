@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914153624) do
+ActiveRecord::Schema.define(version: 20170917114825) do
 
   create_table "blogs", force: :cascade do |t|
     t.string "url"
@@ -30,12 +30,10 @@ ActiveRecord::Schema.define(version: 20170914153624) do
     t.datetime "updated_at", null: false
     t.integer "pack_id"
     t.text "content"
-    t.integer "user_id"
-    t.datetime "rss_refreshed_at"
+    t.datetime "refreshed_at"
     t.string "etag"
-    t.string "last_modified"
+    t.string "content_type"
     t.index ["pack_id"], name: "index_feeds_on_pack_id"
-    t.index ["user_id"], name: "index_feeds_on_user_id"
   end
 
   create_table "packs", force: :cascade do |t|

@@ -20,9 +20,11 @@ require 'net/http'
 
 class RssFeed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
-  belongs_to :blog
+  belongs_to :pack
   after_initialize :refresh, if: -> { content.nil? }
   before_save :update_refreshed_time, if: -> { content_changed? }
+  before_create :clear_pack_rss
+  before_destroy :clear_pack_rss
   validates :content_type, presence: true
   validates :url, presence: true
   validates :title, presence: true
@@ -39,7 +41,34 @@ class RssFeed < ApplicationRecord
     parse_as_rss20(content)
   end
 
+  def self.discover(url)
+    html_doc = fetch(url)
+    parse_feeds(html_doc)
+  end
+
   private
+
+  def fetch(url)
+    charset = nil
+    html = open(url) do |f|
+      charset = f.charset
+      f.read
+    end
+    Nokogiri::HTML.parse(html, nil, charset)
+  end
+
+  def parse_feeds(html_doc)
+    feeds = []
+    html_doc.xpath("//link[@rel='alternate']").each do |link|
+      attrs = link.attributes
+      feeds << RssFeed.new(
+        content_type: attrs['type']&.value,
+        title: attrs['title']&.value,
+        url: attrs['href']&.value
+      )
+    end
+    feeds
+  end
 
   def fetch_content
     uri = URI.parse(url)
@@ -76,5 +105,9 @@ class RssFeed < ApplicationRecord
 
   def update_refreshed_time
     self.refreshed_at = Time.zone.now
+  end
+
+  def clear_pack_rss
+    pack.clear_rss
   end
 end

@@ -35,7 +35,7 @@ class Blog < ApplicationRecord
     feeds = []
     html_doc.xpath("//link[@rel='alternate']").each do |link|
       attrs = link.attributes
-      feeds << RssFeed.new(
+      feeds << Feed.new(
         content_type: attrs['type']&.value,
         title: attrs['title']&.value,
         url: attrs['href']&.value
