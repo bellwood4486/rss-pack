@@ -1,11 +1,10 @@
-%h1 Select feed
+%h1 Select a feed
 .row
   .col-md-6.col-md-offset-3
-    = @feeds.count
     - @feeds.each do |feed|
-      = form_for(feed, url: feeds_path) do |f|
-        = feed.title
-        = feed.url
-        = feed.content_type
-
-        = f.submit '登録', class: "btn btn-primary"
+      = form_for(feed) do |f|
+        = f.hidden_field :url
+        = f.hidden_field :title
+        = f.hidden_field :content_type
+        %a= link_to "#{feed.title}", feed.url, target: '_blank'
+        = f.submit 'Follow', class: "btn btn-primary"

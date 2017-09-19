@@ -7,7 +7,7 @@ class FeedsController < ApplicationController
     @feeds = current_user.feeds
   end
 
-  def new
+  def discover
     @feed_source = FeedSource.new
   end
 
@@ -16,18 +16,18 @@ class FeedsController < ApplicationController
     if @feed_source.valid?
       @feeds = Feed.discover(@feed_source.url)
     else
-      render 'new'
+      render :new
     end
   end
 
   def create
     @feed = current_user.feeds.build(feed_create_params)
-    @feed.pack = current_user.packs.first # :TODO 決め打ちをあとでなおす
-    @feed.refresh_rss
+    @feed.packs << current_user.packs.first # :TODO 決め打ちをあとでなおす
+    @feed.refresh
     if @feed.save
       redirect_to feeds_url, notice: '追加しました'
     else
-      render :new
+      render :select
     end
   end
 
@@ -39,7 +39,7 @@ class FeedsController < ApplicationController
   private
 
   def feed_create_params
-    params.require(:feed).permit(:url)
+    params.require(:feed).permit(:url, :title, :content_type)
   end
 
   def load_feed

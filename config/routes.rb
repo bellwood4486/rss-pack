@@ -7,7 +7,10 @@ Rails.application.routes.draw do
   delete 'logout', to: 'sessions#destroy'
   resources :users, only: %i[index new create destroy]
   resources :feeds do
-    post 'select', on: :new
+    collection do
+      get 'discover'
+      post 'select'
+    end
   end
   get 'rss/:token', to: 'packs#rss', as: 'rss'
 end

@@ -11,7 +11,7 @@
     -# :TODO フラグメントに切り出し
     - @feeds.each do |feed|
       %tr
-        %td= link_to feed.title, url: feed.url
+        %td= link_to feed.title, feed.url, target: '_blank'
         %td= feed.created_at
-        %td= feed.rss_refreshed_at
+        %td= feed.refreshed_at
         %td= link_to '削除', feed, method: :delete, data: { confirm: 'Are you sure?'}

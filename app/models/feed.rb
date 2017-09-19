@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: feeds
@@ -21,8 +22,8 @@ require 'open-uri'
 class Feed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
   has_and_belongs_to_many :packs
-  after_initialize :refresh, if: -> { content.nil? }
   before_save :update_refreshed_time, if: -> { content_changed? }
+  before_create :refresh, if: -> { content.nil? }
   before_create :clear_pack_rss
   before_destroy :clear_pack_rss
   validates :content_type, presence: true
@@ -58,16 +59,14 @@ class Feed < ApplicationRecord
   end
 
   def self.parse_feeds(html_doc)
-    feeds = []
-    html_doc.xpath("//link[@rel='alternate']").each do |link|
+    html_doc.xpath("//link[@rel='alternate']").map do |link|
       attrs = link.attributes
-      feeds << Feed.new(
-        content_type: attrs['type']&.value,
-        title: attrs['title']&.value,
-        url: attrs['href']&.value
-      )
+      Feed.new do |f|
+        f.content_type = attrs['type']&.value
+        f.title = attrs['title']&.value
+        f.url = attrs['href']&.value
+      end
     end
-    feeds
   end
 
   def fetch_content
@@ -108,6 +107,6 @@ class Feed < ApplicationRecord
   end
 
   def clear_pack_rss
-    pack.clear_rss
+    packs.map(&:clear_rss)
   end
 end

@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(version: 20170917142516) do
     t.index ["user_id"], name: "index_feeds_on_user_id"
   end
 
+  create_table "feeds_packs", id: false, force: :cascade do |t|
+    t.integer "feed_id"
+    t.integer "pack_id"
+    t.index ["feed_id"], name: "index_feeds_packs_on_feed_id"
+    t.index ["pack_id"], name: "index_feeds_packs_on_pack_id"
+  end
+
   create_table "packs", force: :cascade do |t|
     t.string "rss_token"
     t.integer "user_id"
@@ -45,13 +52,6 @@ ActiveRecord::Schema.define(version: 20170917142516) do
     t.datetime "rss_refreshed_at"
     t.string "name"
     t.index ["user_id"], name: "index_packs_on_user_id"
-  end
-
-  create_table "packs_and_feeds", id: false, force: :cascade do |t|
-    t.integer "pack_id"
-    t.integer "feed_id"
-    t.index ["feed_id"], name: "index_packs_and_feeds_on_feed_id"
-    t.index ["pack_id"], name: "index_packs_and_feeds_on_pack_id"
   end
 
   create_table "rss_feeds", force: :cascade do |t|
