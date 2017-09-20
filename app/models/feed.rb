@@ -71,7 +71,7 @@ class Feed < ApplicationRecord
 
   def fetch_content
     uri = URI.parse(url)
-    req = Net::HTTP::Get.new(uri.path)
+    req = Net::HTTP::Get.new(uri.request_uri)
     req['If-None-Match'] = etag
     res = Net::HTTP.start(
       uri.host, uri.port,
