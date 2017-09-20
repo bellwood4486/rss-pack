@@ -26,9 +26,9 @@ class Pack < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
-  def refresh!
+  def refresh!(rss_url)
     return if rss_fresh?
-    update! rss_content: pack_feeds, rss_refreshed_at: Time.zone.now
+    update! rss_content: pack_feeds(rss_url), rss_refreshed_at: Time.zone.now
   end
 
   def clear_rss
@@ -38,19 +38,20 @@ class Pack < ApplicationRecord
   private
 
   def rss_fresh?
-    rss_refreshed_at.present? &&
-      (Time.zone.now - rss_refreshed_at) <= 1.hour
+    # :TODO あとで戻す
+    return false
+    # rss_refreshed_at.present? &&
+    #   (Time.zone.now - rss_refreshed_at) <= 1.hour
   end
 
   def create_rss_token
     self.rss_token = Pack.new_token
   end
 
-  def pack_feeds
+  def pack_feeds(rss_url)
     merged_rss = RSS::Maker.make('2.0') do |maker|
       maker.channel.title = 'RssPack'
-      # :TODO linkを見直す
-      maker.channel.link = 'http://localhost:3000'
+      maker.channel.link = rss_url
       maker.channel.description = "#{feeds.count}個のフィードを1つにまとめたRSSです。"
 
       maker.items.do_sort = true
