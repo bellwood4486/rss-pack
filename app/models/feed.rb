@@ -35,7 +35,7 @@ class Feed < ApplicationRecord
   end
 
   def refresh!
-    update_attibutes!(content: fetch_content)
+    update_attributes!(content: fetch_content)
   end
 
   def rss20

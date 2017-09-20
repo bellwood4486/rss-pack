@@ -26,7 +26,7 @@ class Pack < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
-  def refresh_rss_if_outdated
+  def refresh!
     return if rss_fresh?
     update! rss_content: pack_feeds, rss_refreshed_at: Time.zone.now
   end
@@ -48,7 +48,7 @@ class Pack < ApplicationRecord
 
   def pack_feeds
     merged_rss = RSS::Maker.make('2.0') do |maker|
-      maker.channel.title = "#{user.email} - RssPack"
+      maker.channel.title = 'RssPack'
       # :TODO linkを見直す
       maker.channel.link = 'http://localhost:3000'
       maker.channel.description = "#{feeds.count}個のフィードを1つにまとめたRSSです。"
@@ -56,10 +56,8 @@ class Pack < ApplicationRecord
       maker.items.do_sort = true
 
       feeds.each do |feed|
-        feed.refresh_rss!
-        rss = RSS::Parser.parse(feed.content).to_feed('rss2.0')
-        rss.channel.items.each do |item|
-          next if item.link.nil?
+        feed.refresh!
+        feed.rss20.channel.items.select { |i| i.link.present? }.map do |item|
           maker.items.new_item do |new_item|
             new_item.title = item.title ||= 'No title'
             new_item.link = item.link
