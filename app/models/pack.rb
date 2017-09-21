@@ -72,7 +72,7 @@ class Pack < ApplicationRecord
     maker.items.do_sort = true
     feeds.each do |feed|
       feed.refresh!
-      feed.rss20.channel.items.select { |i| i.link.present? && i.date > rss_refreshed_at }.map do |item|
+      feed.rss20.channel.items.select { |i| should_pack?(i) }.map do |item|
         maker.items.new_item do |new_item|
           new_item.title = item.title ||= 'No title'
           new_item.link = item.link
@@ -80,5 +80,9 @@ class Pack < ApplicationRecord
         end
       end
     end
+  end
+
+  def should_pack?(rss20_item)
+    rss20_item.link.present? && rss20_item.date > rss_refreshed_at
   end
 end
