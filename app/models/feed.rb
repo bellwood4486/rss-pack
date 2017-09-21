@@ -99,7 +99,8 @@ class Feed < ApplicationRecord
     rescue RSS::InvalidRSSError
       rss = RSS::Parser.parse(rss_source, false)
     end
-    rss.to_rss('2.0')
+    rss20 = rss.to_rss('2.0')
+    rss.feed_type == 'atom' ? fix_rss20_link(rss, rss20) : rss20
   end
 
   def update_refreshed_time
@@ -108,5 +109,16 @@ class Feed < ApplicationRecord
 
   def clear_pack_rss
     packs.map(&:clear_rss)
+  end
+
+  # atom -> rss20 変換時に、atom側のlink要素が複数あると期待したリンクが
+  # rss20に割当たらない問題を修復するためのコード
+  def fix_rss20_link(atom, rss20)
+    atom.items.each_with_index do |atom_item, idx|
+      atom_link = atom_item.links.find { |l| l.rel == 'alternate' }
+      next if atom_link.blank?
+      rss20.channel.items[idx].link = atom_link.href
+    end
+    rss20
   end
 end
