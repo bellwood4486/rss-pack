@@ -19,7 +19,9 @@ require 'rss'
 class Pack < ApplicationRecord
   belongs_to :user
   has_and_belongs_to_many :feeds
-  after_initialize :create_rss_token, if: -> { rss_token.nil? }
+  after_initialize :create_rss_token, if: -> { rss_token.blank? }
+  after_initialize :default_rss_refreshed_time,
+                   if: -> { rss_refreshed_at.blank? }
   validates :rss_token, presence: true
 
   def self.new_token
@@ -39,7 +41,7 @@ class Pack < ApplicationRecord
 
   def rss_fresh?
     # :TODO あとで戻す
-    return false
+    false
     # rss_refreshed_at.present? &&
     #   (Time.zone.now - rss_refreshed_at) <= 1.hour
   end
@@ -48,25 +50,35 @@ class Pack < ApplicationRecord
     self.rss_token = Pack.new_token
   end
 
+  def default_rss_refreshed_time
+    self.rss_refreshed_at = Time.zone.now
+  end
+
   def pack_feeds(rss_url)
     merged_rss = RSS::Maker.make('2.0') do |maker|
-      maker.channel.title = 'RssPack'
-      maker.channel.link = rss_url
-      maker.channel.description = "#{feeds.count}個のフィードを1つにまとめたRSSです。"
+      make_pack_header maker, rss_url
+      make_pack_items maker
+    end
+    merged_rss.to_s
+  end
 
-      maker.items.do_sort = true
+  def make_pack_header(maker, rss_url)
+    maker.channel.title = 'RssPack'
+    maker.channel.link = rss_url
+    maker.channel.description = "#{rss_refreshed_at}以降の更新フィード"
+  end
 
-      feeds.each do |feed|
-        feed.refresh!
-        feed.rss20.channel.items.select { |i| i.link.present? }.map do |item|
-          maker.items.new_item do |new_item|
-            new_item.title = item.title ||= 'No title'
-            new_item.link = item.link
-            new_item.date = item.date
-          end
+  def make_pack_items(maker)
+    maker.items.do_sort = true
+    feeds.each do |feed|
+      feed.refresh!
+      feed.rss20.channel.items.select { |i| i.link.present? && i.date > rss_refreshed_at }.map do |item|
+        maker.items.new_item do |new_item|
+          new_item.title = item.title ||= 'No title'
+          new_item.link = item.link
+          new_item.date = item.date
         end
       end
     end
-    merged_rss.to_s
   end
 end
