@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :feeds, dependent: :destroy
   has_secure_password
   before_save :downcase_email
+  validates :email, presence: true, uniqueness: true
 
   private
 
