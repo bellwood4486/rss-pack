@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 describe User, type: :model do
+  it '有効なファクトリを持つこと' do
+    expect(FactoryGirl.build(:user)).to be_valid
+  end
+
   it 'メールアドレス、パスワード(確認用も)があれば有効な状態であること' do
     user = User.new(email: 'test@example.com',
                     password: 'secret',
