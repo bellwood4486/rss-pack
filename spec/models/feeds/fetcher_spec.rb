@@ -4,6 +4,8 @@ require 'rails_helper'
 
 describe Feeds::Fetcher, type: :model do
   describe '.fetch' do
+    CASSETTE_NAME_PREFIX = 'models/feeds/fetch_response_'
+
     context 'URLが正しい場合' do
       let(:url) do
         'http://cyber.harvard.edu/rss/examples/rss2sample.xml'
@@ -21,7 +23,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが未指定の場合' do
         let(:actual) do
-          VCR.use_cassette 'models/feeds/fetch_response_no_etag' do
+          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}no_etag" do
             Feeds::Fetcher.fetch url
           end
         end
@@ -30,7 +32,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが無効な場合' do
         let(:actual) do
-          VCR.use_cassette 'models/feeds/fetch_response_outdated_etag' do
+          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}outdated_etag" do
             Feeds::Fetcher.fetch url, etag: 'OutdatedEtag'
           end
         end
@@ -39,7 +41,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが有効な場合' do
         it '呼び出し時で指定した値をレスポンスボディとして返すこと' do
-          VCR.use_cassette 'models/feeds/fetch_response_etag' do
+          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}etag" do
             actual = Feeds::Fetcher.fetch url,
                                           etag: '"d46a5b-9e0-42d731ba304c0"',
                                           response_body_if_not_modified: 'DefaultBody'
