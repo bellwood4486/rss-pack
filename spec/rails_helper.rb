@@ -57,4 +57,11 @@ RSpec.configure do |config|
 
   # ファクトリを簡単に呼び出せるよう、Factory Girlの構文をインクルードする
   config.include FactoryGirl::Syntax::Methods
+
+  # vcrの設定
+  VCR.configure do |c|
+    c.cassette_library_dir = 'spec/vcr'
+    c.hook_into :webmock
+    c.allow_http_connections_when_no_cassette = false
+  end
 end

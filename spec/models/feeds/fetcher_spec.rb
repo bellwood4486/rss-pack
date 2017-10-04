@@ -21,24 +21,30 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが未指定の場合' do
         let(:actual) do
-          Feeds::Fetcher.fetch url
+          VCR.use_cassette 'models/feeds/fetch_response_no_etag' do
+            Feeds::Fetcher.fetch url
+          end
         end
         it_behaves_like '結果を取得して返す'
       end
 
       context 'Etagが無効な場合' do
         let(:actual) do
-          Feeds::Fetcher.fetch url, etag: 'OutdatedEtag'
+          VCR.use_cassette 'models/feeds/fetch_response_outdated_etag' do
+            Feeds::Fetcher.fetch url, etag: 'OutdatedEtag'
+          end
         end
         it_behaves_like '結果を取得して返す'
       end
 
       context 'Etagが有効な場合' do
         it '呼び出し時で指定した値をレスポンスボディとして返すこと' do
-          actual = Feeds::Fetcher.fetch url,
-                                        etag: '"d46a5b-9e0-42d731ba304c0"',
-                                        response_body_if_not_modified: 'DefaultBody'
-          expect(actual[:body]).to eq 'DefaultBody'
+          VCR.use_cassette 'models/feeds/fetch_response_etag' do
+            actual = Feeds::Fetcher.fetch url,
+                                          etag: '"d46a5b-9e0-42d731ba304c0"',
+                                          response_body_if_not_modified: 'DefaultBody'
+            expect(actual[:body]).to eq 'DefaultBody'
+          end
         end
       end
     end
