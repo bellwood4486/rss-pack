@@ -2,6 +2,8 @@
 
 require 'rails_helper'
 
+include WebMock::API
+
 describe Feeds::Fetcher, type: :model do
   describe '.fetch' do
     CASSETTE_NAME_PREFIX = 'models/feeds/fetch_response_'
@@ -40,16 +42,62 @@ describe Feeds::Fetcher, type: :model do
       end
 
       context 'Etagが有効な場合' do
-        it '呼び出し時で指定した値をレスポンスボディとして返すこと' do
+        let(:actual) do
           VCR.use_cassette "#{CASSETTE_NAME_PREFIX}etag" do
-            actual = Feeds::Fetcher.fetch url,
-                                          etag: '"d46a5b-9e0-42d731ba304c0"',
-                                          response_body_if_not_modified: 'DefaultBody'
-            expect(actual[:body]).to eq 'DefaultBody'
+            Feeds::Fetcher.fetch url,
+                                 etag: '"d46a5b-9e0-42d731ba304c0"',
+                                 response_body_if_not_modified: 'DefaultBody'
           end
+        end
+
+        it '呼び出し時で指定した値をEtagとして返すこと' do
+          expect(actual[:etag]).to eq '"d46a5b-9e0-42d731ba304c0"'
+        end
+
+        it '呼び出し時で指定した値をレスポンスボディとして返すこと' do
+          expect(actual[:body]).to eq 'DefaultBody'
         end
       end
     end
-  end
 
+    context 'URLが不正な場合' do
+      shared_examples 'nilを返す' do
+        let (:actual) do
+          VCR.turned_off do
+            Feeds::Fetcher.fetch invalid_url
+          end
+        end
+
+        it 'Etagはnilを返すこと' do
+          expect(actual[:etag]).to be_nil
+        end
+
+        it 'レスポンスボディはnilを返すこと' do
+          expect(actual[:body]).to be_nil
+        end
+      end
+
+      context 'フォーマット不正のURLの場合' do
+        let(:invalid_url) do
+          'invalid_url'
+        end
+
+        it_behaves_like 'nilを返す'
+      end
+
+      context '存在しないURLの場合' do
+        let(:invalid_url) do
+          'http://localhost/unknown'
+        end
+
+        before :all do
+          stub_request(:get, 'http://localhost/unknown').to_return(
+              status: 404,
+          )
+        end
+
+        it_behaves_like 'nilを返す'
+      end
+    end
+  end
 end
