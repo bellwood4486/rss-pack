@@ -107,7 +107,7 @@ describe Feeds::Fetcher, type: :model do
     context 'URLが正しい場合' do
       let :actual do
         VCR.use_cassette "#{DISCOVER_CASSETTE_PREFIX}normal" do
-          Feeds::Fetcher.discover('http://weblog.rubyonrails.org/')
+          Feeds::Fetcher.discover 'http://weblog.rubyonrails.org/'
         end
       end
       it 'フィードのタイトルを返すこと' do
@@ -122,7 +122,36 @@ describe Feeds::Fetcher, type: :model do
     end
 
     context 'URLが不正な場合' do
-      it '空配列を返すこと'
+      shared_examples '空配列を返す' do
+        it '空配列を返すこと' do
+          VCR.turned_off do
+            actual = Feeds::Fetcher.discover invalid_url
+            expect(actual).to be_empty
+          end
+        end
+      end
+
+      context 'フォーマット不正のURLの場合' do
+        let(:invalid_url) do
+          'invalid_url'
+        end
+
+        it_behaves_like '空配列を返す'
+      end
+
+      context '存在しないURLの場合' do
+        let(:invalid_url) do
+          'http://localhost/unknown'
+        end
+
+        before :all do
+          stub_request(:get, 'http://localhost/unknown').to_return(
+              status: 404,
+          )
+        end
+
+        it_behaves_like '空配列を返す'
+      end
     end
   end
 end

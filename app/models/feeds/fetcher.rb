@@ -8,9 +8,13 @@ module Feeds
     class << self
       def discover(url)
         charset = nil
-        html = open(url) do |f|
-          charset = f.charset
-          f.read
+        begin
+          html = open(url) do |f|
+            charset = f.charset
+            f.read
+          end
+        rescue Errno::ENOENT, OpenURI::HTTPError
+          return []
         end
         html_doc = Nokogiri::HTML.parse(html, nil, charset)
         html_doc.xpath("//link[@rel='alternate']").map do |link|
