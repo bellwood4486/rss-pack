@@ -1,0 +1,34 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://cyber.harvard.edu/rss/examples/rss2sample.xml
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      If-None-Match:
+      - '"d46a5b-9e0-42d731ba304c0"'
+  response:
+    status:
+      code: 304
+      message: Not Modified
+    headers:
+      Date:
+      - Wed, 04 Oct 2017 14:49:10 GMT
+      Server:
+      - Apache
+      Etag:
+      - '"d46a5b-9e0-42d731ba304c0"'
+    body:
+      encoding: UTF-8
+      string: ''
+    http_version: 
+  recorded_at: Wed, 04 Oct 2017 14:49:10 GMT
+recorded_with: VCR 3.0.3

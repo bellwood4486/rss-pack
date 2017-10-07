@@ -16,9 +16,6 @@
 #  user_id      :integer
 #
 
-require 'net/http'
-require 'open-uri'
-
 class Feed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
   has_and_belongs_to_many :packs
@@ -31,11 +28,11 @@ class Feed < ApplicationRecord
   validates :title, presence: true
 
   def refresh
-    assign_attributes(content: fetch_content)
+    assign_attributes(fetch_content)
   end
 
   def refresh!
-    update_attributes!(content: fetch_content)
+    update_attributes!(fetch_content)
   end
 
   def rss20
@@ -43,53 +40,21 @@ class Feed < ApplicationRecord
   end
 
   def self.discover(url)
-    html_doc = fetch(url)
-    parse_feeds(html_doc)
-  end
-
-  private
-
-  def self.fetch(url)
-    charset = nil
-    html = open(url) do |f|
-      charset = f.charset
-      f.read
-    end
-    Nokogiri::HTML.parse(html, nil, charset)
-  end
-
-  def self.parse_feeds(html_doc)
-    html_doc.xpath("//link[@rel='alternate']").map do |link|
-      attrs = link.attributes
-      Feed.new do |f|
-        f.content_type = attrs['type']&.value
-        f.title = attrs['title']&.value
-        f.url = attrs['href']&.value
+    Feeds::Fetcher.discover(url).map do |discovered|
+      Feed.new do |feed|
+        feed.title = discovered[:title] || DEFAULT_TITLE
+        feed.url = discovered[:url]
+        feed.content_type = discovered[:content_type]
       end
     end
   end
 
-  def fetch_content
-    uri = URI.parse(url)
-    req = Net::HTTP::Get.new(uri.request_uri)
-    req['If-None-Match'] = etag
-    res = Net::HTTP.start(
-      uri.host, uri.port,
-      use_ssl: uri.scheme == 'https'
-    ) do |http|
-      http.open_timeout = 5
-      http.read_timeout = 10
-      http.request(req)
-    end
+  private
 
-    case res
-    when Net::HTTPNotModified
-      content # 前回保存しておいたものを返して無駄な通信を避ける
-    when Net::HTTPSuccess
-      self.etag = res['Etag']
-      self.content = res.body.force_encoding('UTF-8')
-      content
-    end
+  def fetch_content
+    f = Feeds::Fetcher.fetch url, etag: etag,
+                             response_body_if_not_modified: content
+    { etag: f[:etag], content: f[:body] }
   end
 
   def parse_as_rss20(rss_source)
@@ -103,14 +68,6 @@ class Feed < ApplicationRecord
     rss.feed_type == 'atom' ? fix_rss20_link(rss, rss20) : rss20
   end
 
-  def update_refreshed_time
-    self.refreshed_at = Time.zone.now
-  end
-
-  def clear_pack_rss
-    packs.map(&:clear_rss)
-  end
-
   # atom -> rss20 変換時に、atom側のlink要素が複数あると期待したリンクが
   # rss20に割当たらない問題を修復するためのコード
   def fix_rss20_link(atom, rss20)
@@ -121,4 +78,13 @@ class Feed < ApplicationRecord
     end
     rss20
   end
+
+  def update_refreshed_time
+    self.refreshed_at = Time.zone.now
+  end
+
+  def clear_pack_rss
+    packs.map(&:clear_rss)
+  end
+
 end
