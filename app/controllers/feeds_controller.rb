@@ -15,8 +15,13 @@ class FeedsController < ApplicationController
     @feed_source = FeedSource.new(url: params[:feed_source][:url])
     if @feed_source.valid?
       @feeds = Feed.discover(@feed_source.url)
+      if @feeds.blank?
+        flash[:error] = 'フィードが見つかりませんでした。URLを見直してみてください。'
+        render :discover
+        return
+      end
     else
-      render :new
+      render :discover
     end
   end
 
