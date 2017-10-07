@@ -5,10 +5,4 @@ class PacksController < ApplicationController
     pack.refresh!(rss_url)
     render xml: pack.rss_content.to_s
   end
-
-  private
-
-  def load_pack
-    @pack = Pack.find(params[:id])
-  end
 end

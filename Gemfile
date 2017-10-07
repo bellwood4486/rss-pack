@@ -43,6 +43,7 @@ group :test do
   gem 'faker'
   gem 'launchy'
   gem 'selenium-webdriver'
+  gem 'timecop'
   gem 'vcr'
   gem 'webmock'
 end
