@@ -42,7 +42,7 @@ class Feed < ApplicationRecord
   def self.discover(url)
     Feeds::Fetcher.discover(url).map do |discovered|
       Feed.new do |feed|
-        feed.title = discovered[:title]
+        feed.title = discovered[:title] || DEFAULT_TITLE
         feed.url = discovered[:url]
         feed.content_type = discovered[:content_type]
       end
@@ -68,14 +68,6 @@ class Feed < ApplicationRecord
     rss.feed_type == 'atom' ? fix_rss20_link(rss, rss20) : rss20
   end
 
-  def update_refreshed_time
-    self.refreshed_at = Time.zone.now
-  end
-
-  def clear_pack_rss
-    packs.map(&:clear_rss)
-  end
-
   # atom -> rss20 変換時に、atom側のlink要素が複数あると期待したリンクが
   # rss20に割当たらない問題を修復するためのコード
   def fix_rss20_link(atom, rss20)
@@ -86,4 +78,13 @@ class Feed < ApplicationRecord
     end
     rss20
   end
+
+  def update_refreshed_time
+    self.refreshed_at = Time.zone.now
+  end
+
+  def clear_pack_rss
+    packs.map(&:clear_rss)
+  end
+
 end
