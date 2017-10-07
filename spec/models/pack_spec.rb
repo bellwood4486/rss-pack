@@ -15,23 +15,22 @@ describe Pack, type: :model do
       Timecop.return
     end
 
-    let :pack do
-      build(:pack)
+    let(:pack) { build(:pack, rss_refreshed_at: Time.zone.now.ago(duration)) }
+    subject { pack.fresh? }
+
+    context '前回更新から59秒以下の場合' do
+      let(:duration) { 59.seconds }
+      it { is_expected.to be_truthy }
     end
 
-    it '前回更新から1分(設置値)経ってなかったらtrueを返すこと' do
-      pack.rss_refreshed_at = Time.zone.now.ago(59.seconds)
-      expect(pack).to be_fresh
+    context '前回更新からちょうど60秒の場合' do
+      let(:duration) { 60.seconds }
+      it { is_expected.to be_truthy }
     end
 
-    it '前回更新からちょうど1分(設置値)ならtrueを返すこと' do
-      pack.rss_refreshed_at = Time.zone.now.ago(60.seconds)
-      expect(pack).to be_fresh
-    end
-
-    it '前回更新から1分(設置値)以上経ってたらfalseを返すこと' do
-      pack.rss_refreshed_at = Time.zone.now.ago(61.seconds)
-      expect(pack).not_to be_fresh
+    context '前回更新から61秒以上の場合' do
+      let(:duration) { 61.seconds }
+      it { is_expected.to be_falsey }
     end
   end
 end
