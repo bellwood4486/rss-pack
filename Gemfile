@@ -32,6 +32,7 @@ gem 'bcrypt', '~> 3.1.7'
 
 gem 'annotate', require: false
 gem 'bootstrap-sass'
+gem 'easy_settings'
 gem 'haml'
 gem 'jquery-rails'
 

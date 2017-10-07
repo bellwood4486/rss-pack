@@ -28,8 +28,13 @@ class Pack < ApplicationRecord
     SecureRandom.urlsafe_base64
   end
 
+  def fresh?
+    rss_refreshed_at.present? &&
+        (Time.zone.now - rss_refreshed_at) <= EasySettings.rss_fresh_duration
+  end
+
   def refresh!(rss_url)
-    return if rss_fresh?
+    return if fresh?
     update! rss_content: pack_feeds(rss_url), rss_refreshed_at: Time.zone.now
   end
 
@@ -38,13 +43,6 @@ class Pack < ApplicationRecord
   end
 
   private
-
-  def rss_fresh?
-    # :TODO あとで戻す
-    false
-    # rss_refreshed_at.present? &&
-    #   (Time.zone.now - rss_refreshed_at) <= 1.hour
-  end
 
   def create_rss_token
     self.rss_token = Pack.new_token
