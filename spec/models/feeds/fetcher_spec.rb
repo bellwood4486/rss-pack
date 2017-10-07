@@ -6,7 +6,7 @@ include WebMock::API
 
 describe Feeds::Fetcher, type: :model do
   describe '.fetch' do
-    CASSETTE_NAME_PREFIX = 'models/feeds/fetch_response_'
+    FETCH_CASSETTE_PREFIX = 'models/feeds/fetch_response_'
 
     context 'URLが正しい場合' do
       let(:url) do
@@ -25,7 +25,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが未指定の場合' do
         let(:actual) do
-          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}no_etag" do
+          VCR.use_cassette "#{FETCH_CASSETTE_PREFIX}no_etag" do
             Feeds::Fetcher.fetch url
           end
         end
@@ -34,7 +34,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが無効な場合' do
         let(:actual) do
-          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}outdated_etag" do
+          VCR.use_cassette "#{FETCH_CASSETTE_PREFIX}outdated_etag" do
             Feeds::Fetcher.fetch url, etag: 'OutdatedEtag'
           end
         end
@@ -43,7 +43,7 @@ describe Feeds::Fetcher, type: :model do
 
       context 'Etagが有効な場合' do
         let(:actual) do
-          VCR.use_cassette "#{CASSETTE_NAME_PREFIX}etag" do
+          VCR.use_cassette "#{FETCH_CASSETTE_PREFIX}etag" do
             Feeds::Fetcher.fetch url,
                                  etag: '"d46a5b-9e0-42d731ba304c0"',
                                  response_body_if_not_modified: 'DefaultBody'
@@ -98,6 +98,31 @@ describe Feeds::Fetcher, type: :model do
 
         it_behaves_like 'nilを返す'
       end
+    end
+  end
+
+  describe '.discover' do
+    DISCOVER_CASSETTE_PREFIX = 'models/feeds/discover_response_'
+
+    context 'URLが正しい場合' do
+      let :actual do
+        VCR.use_cassette "#{DISCOVER_CASSETTE_PREFIX}normal" do
+          Feeds::Fetcher.discover('http://weblog.rubyonrails.org/')
+        end
+      end
+      it 'フィードのタイトルを返すこと' do
+        expect(actual.first[:title]).to eq 'Riding Rails'
+      end
+      it 'フィードのURLを返すこと' do
+        expect(actual.first[:url]).to eq 'http://weblog.rubyonrails.org/feed/atom.xml'
+      end
+      it 'フィードのコンテンツタイプを返すこと' do
+        expect(actual.first[:content_type]).to eq 'application/atom+xml'
+      end
+    end
+
+    context 'URLが不正な場合' do
+      it '空配列を返すこと'
     end
   end
 end
