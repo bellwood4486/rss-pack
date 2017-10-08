@@ -21,11 +21,16 @@ describe UsersController, type: :controller do
           post :create, params: { user: attributes_for(:user) }
         }.to change(User, :count).by(1)
       end
+
       it 'トップページにリダイレクトすること' do
         post :create, params: { user: attributes_for(:user) }
         expect(response).to redirect_to root_url
       end
-      it '新しいユーザーはPackを1つ持っていること'
+
+      it '新しいユーザーはPackを1つ持っていること' do
+        post :create, params: { user: attributes_for(:user) }
+        expect(assigns(:user).packs.count).to eq 1
+      end
     end
 
     context '無効な属性の場合' do
