@@ -3,7 +3,7 @@ require 'rails_helper'
 describe UsersController, type: :controller do
 
   describe 'GET #new' do
-    it '@contract に新しい連絡先を割り当てること' do
+    it '@user に新しいユーザーを割り当てること' do
       get :new
       expect(assigns(:user)).to be_a_new(User)
     end
