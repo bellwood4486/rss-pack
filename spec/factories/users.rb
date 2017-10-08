@@ -4,6 +4,12 @@ FactoryGirl.define do
     password 'secret'
     password_confirmation 'secret'
 
+    factory :user_with_pack do
+      after :build do |user|
+        user.packs << build(:pack)
+      end
+    end
+
     factory :invalid_user do
       email nil
     end
