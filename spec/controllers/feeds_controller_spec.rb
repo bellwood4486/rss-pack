@@ -119,8 +119,16 @@ describe FeedsController, type: :controller do
     end
 
     context '無効な属性の場合' do
-      it 'データベースに新しいユーザーを保存しないこと'
-      it ':select テンプレートを再表示すること'
+      it 'データベースに新しいユーザーを保存しないこと' do
+        expect {
+          post :create, params: { feed: attributes_for(:invalid_feed) }
+        }.not_to change(Feed, :count)
+      end
+
+      it ':select テンプレートを再表示すること' do
+        post :create, params: { feed: attributes_for(:invalid_feed) }
+        expect(response).to render_template :select
+      end
     end
   end
 end
