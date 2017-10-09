@@ -1,4 +1,13 @@
-%h1 Welcome
-
-%p
-  = link_to 'sign up', signup_path
+.row
+  .col-sm-7
+    %h1 RssPackは、RSSフィードを1つにまとめるサービスです。
+  .col-sm-5
+    = form_for :session, url: login_path do |f|
+      = f.email_field :email, class: 'form-control', placeholder: 'メールアドレス'
+      .row
+        .col-sm-9
+          = f.password_field :password, class: 'form-control', placeholder: 'パスワード'
+        .col-sm-3
+          = f.submit 'ログイン', class: 'btn btn-primary'
+    %p
+      新規登録は#{link_to 'こちら', signup_path}
