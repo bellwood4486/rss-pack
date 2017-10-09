@@ -5,7 +5,7 @@ FactoryGirl.define do
     content_type 'application/rss'
     content 'dummycontent'
     refreshed_at Time.zone.now
-    association :user
+    user
 
     factory :invalid_feed do
       url nil
