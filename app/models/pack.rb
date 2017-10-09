@@ -75,6 +75,7 @@ class Pack < ApplicationRecord
   end
 
   def should_pack?(rss20_item)
-    rss20_item.link.present? && rss20_item.date > rss_refreshed_at
+    rss20_item.link.present? &&
+        (rss_refreshed_at.blank? || rss20_item.date > rss_refreshed_at)
   end
 end
