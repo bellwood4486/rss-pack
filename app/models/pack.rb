@@ -20,8 +20,6 @@ class Pack < ApplicationRecord
   belongs_to :user
   has_and_belongs_to_many :feeds
   after_initialize :create_rss_token, if: -> { rss_token.blank? }
-  after_initialize :default_rss_refreshed_time,
-                   if: -> { rss_refreshed_at.blank? }
   validates :rss_token, presence: true
 
   def self.new_token
@@ -46,10 +44,6 @@ class Pack < ApplicationRecord
 
   def create_rss_token
     self.rss_token = Pack.new_token
-  end
-
-  def default_rss_refreshed_time
-    self.rss_refreshed_at = Time.zone.now
   end
 
   def pack_feeds(rss_url)
@@ -81,6 +75,7 @@ class Pack < ApplicationRecord
   end
 
   def should_pack?(rss20_item)
-    rss20_item.link.present? && rss20_item.date > rss_refreshed_at
+    rss20_item.link.present? &&
+        (rss_refreshed_at.blank? || rss20_item.date > rss_refreshed_at)
   end
 end

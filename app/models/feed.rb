@@ -18,6 +18,7 @@
 
 class Feed < ApplicationRecord
   DEFAULT_TITLE = 'NO_NAME'
+  belongs_to :user
   has_and_belongs_to_many :packs
   before_save :update_refreshed_time, if: -> { content_changed? }
   before_create :refresh, if: -> { content.nil? }
