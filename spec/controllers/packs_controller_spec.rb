@@ -17,7 +17,11 @@ describe PacksController, type: :controller do
     end
 
     context '存在しないrss_tokenの場合' do
-      it '404を返すこと'
+      it 'RoutingErrorを投げること' do
+        expect {
+          get :rss, params: { token: 'unknowntoken' }
+        }.to raise_error ActionController::RoutingError
+      end
     end
   end
 end
