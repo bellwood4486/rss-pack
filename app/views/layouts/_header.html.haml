@@ -7,7 +7,7 @@
           %li= link_to 'フィード登録', discover_feeds_path
           %li= link_to 'フィード一覧', feeds_path
           %li.dropdown
-            %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+            %a.dropdown-toggle{'data-toggle' => 'dropdown', :href => '#'}
               = "#{current_user.email}"
               %b.caret
             %ul.dropdown-menu
