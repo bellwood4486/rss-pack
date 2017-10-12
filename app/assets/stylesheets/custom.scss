@@ -73,12 +73,6 @@ p {
   }
 }
 
-.header_addFeed_btn {
-  margin-top: 8px;
-  background-color: white;
-  border-color: #ccc;
-}
-
 /* footer */
 
 footer {
@@ -119,7 +113,9 @@ footer {
 
 aside {
   section.user_info {
-    margin-top: 20px;
+    list-style: none;
+    margin-bottom: 16px;
+    padding: 10px;
   }
   section {
     padding: 10px 0;
