@@ -4,7 +4,9 @@
     %nav
       %ul.nav.navbar-nav.navbar-right
         - if logged_in?
-          %li= link_to 'フィード登録', discover_feeds_path
+          %li
+            = fa_icon 'lg inverse edit'
+            = link_to 'フィード登録', discover_feeds_path
           %li= link_to 'フィード一覧', feeds_path
           %li.dropdown
             %a.dropdown-toggle{'data-toggle' => 'dropdown', :href => '#'}
