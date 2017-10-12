@@ -1,12 +1,9 @@
-%h1 Sign up
+%h1 ユーザー登録
 .row
   .col-md-6.col-md-offset-3
     = form_for(@user, url: users_path) do |f|
       = render 'shared/errors', model: @user
-      = f.label :email
-      = f.text_field :email, class: 'form-control'
-      = f.label :password
-      = f.password_field :password, class: 'form-control'
-      = f.label :password_confirmation, 'Confirmation'
-      = f.password_field :password_confirmation, class: 'form-control'
-      = f.submit 'Sing up', class: "btn btn-primary"
+      = f.text_field :email, class: 'form-control', placeholder: 'メールアドレス'
+      = f.password_field :password, class: 'form-control' , placeholder: 'パスワード'
+      = f.password_field :password_confirmation, class: 'form-control', placeholder: 'パスワード(確認用)'
+      = f.submit '登録', class: "btn btn-primary"
