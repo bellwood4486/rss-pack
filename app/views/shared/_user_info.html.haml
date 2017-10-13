@@ -1,9 +1,12 @@
-.user-info-names
-  .user-info-url-name
-    = link_to current_user.email, current_user
-.user-info-stats
-  .user-info-feeds-count
-    = "#{current_user.feeds.count}"
-    %span.user-info-stats-unit
-      フィード
+.user-info-left
+  = link_to gravatar_for(current_user, size: 48, class_attr: 'user-info-avatar'), current_user
+.user-info-right
+  .user-info-names
+    .user-info-url-name
+      = link_to current_user.email, current_user
+  .user-info-stats
+    .user-info-feeds-count
+      = "#{current_user.feeds.count}"
+      %span.user-info-stats-unit
+        フィード
 %span= text_field_tag 'rss_url', rss_url(current_user.packs.first.rss_token), readonly: true
