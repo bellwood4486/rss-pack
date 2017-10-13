@@ -1,6 +1,8 @@
 .row
-  .col-md-8
+  .col-md-9
     %h3 最近更新
-  %aside.col-md-4
+  %aside.col-md-3
     %section.user-info
       = render 'shared/user_info'
+    %section.pack-info
+      %span= text_field_tag 'rss_url', rss_url(current_user.packs.first.rss_token), readonly: true

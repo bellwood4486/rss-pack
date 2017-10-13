@@ -9,4 +9,3 @@
       = "#{current_user.feeds.count}"
       %span.user-info-stats-unit
         フィード
-%span= text_field_tag 'rss_url', rss_url(current_user.packs.first.rss_token), readonly: true
