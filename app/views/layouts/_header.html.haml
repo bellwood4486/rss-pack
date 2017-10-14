@@ -4,15 +4,26 @@
     %nav
       %ul.nav.navbar-nav.navbar-right
         - if logged_in?
-          %li= link_to 'フィード登録', discover_feeds_path
+          %li
+            = link_to discover_feeds_path do
+              = fa_icon 'lg fw inverse edit'
+              フィード登録
           %li= link_to 'フィード一覧', feeds_path
           %li.dropdown
-            %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+            %a.dropdown-toggle{'data-toggle' => 'dropdown', :href => '#'}
               = "#{current_user.email}"
               %b.caret
             %ul.dropdown-menu
-              %li= link_to "Profile", '#'
-              %li= link_to "Settings", '#'
+              %li
+                = link_to '#' do
+                  = fa_icon 'fw user'
+                  マイページ
+              %li
+                = link_to '#' do
+                  = fa_icon 'fw cog'
+                  設定
               %li.divider
               %li
-                = link_to 'ログアウト', logout_path, method: :delete
+                = link_to logout_path, method: :delete do
+                  = fa_icon 'fw sign-out'
+                  ログアウト

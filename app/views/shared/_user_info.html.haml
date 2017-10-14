@@ -1,4 +1,11 @@
-%h1= current_user.email
-%span= link_to 'view my profile', current_user
-%span= link_to "#{pluralize(current_user.feeds.count, 'feed')}", feeds_path
-%span= text_field_tag 'rss_url', rss_url(current_user.packs.first.rss_token), readonly: true
+.user-info-left
+  = link_to gravatar_for(current_user, size: 64, class_attr: 'user-info-avatar'), current_user
+.user-info-right
+  .user-info-names
+    .user-info-url-name
+      = link_to current_user.email, current_user
+  .user-info-stats
+    .user-info-feeds-count
+      = "#{current_user.feeds.count}"
+      %span.user-info-stats-unit
+        フィード
