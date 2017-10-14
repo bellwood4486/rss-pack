@@ -3,6 +3,7 @@
   .col-md-6.col-md-offset-3
     = form_for(:feed_source, url: select_feeds_path) do |f|
       = render 'shared/errors', model: @feed_source
-      = f.label :url
-      = f.text_field :url, class: 'form-control'
-      = f.submit 'Next', class: "btn btn-primary"
+      .form-group
+        = f.label :url, 'URL', for: 'url'
+        = f.text_field :url, id: 'url', class: 'form-control', placeholder: 'ブログなどのURL'
+      = f.submit 'Next', class: 'btn btn-primary'
