@@ -2,6 +2,21 @@
 
 $gray-medium-light: #eaeaea;
 
+// max-width
+// https://www.tam-tam.co.jp/tipsnote/html_css/post10708.html
+$breakpoint-down: (
+  'sm': 'screen and (max-width: 399px)',
+  'md': 'screen and (max-width: 767px)',
+  'lg': 'screen and (max-width: 999px)',
+  'xl': 'screen and (max-width: 1199px)',
+) !default;
+
+@mixin mq-down($breakpoint: md) {
+  @media #{map-get($breakpoint-down, $breakpoint)} {
+    @content;
+  }
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6 {
@@ -109,6 +124,10 @@ footer {
   vertical-align: middle;
   width: 64px;
   height: 64px;
+  @include mq-down(xl) {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .user-info-names {
@@ -119,24 +138,15 @@ footer {
 
 .user-info-url-name {
   font-size: 18px;
+  @include mq-down(xl) {
+    font-size: 16px;
+  }
 }
 
 .user-info-stats {
   display: block;
   font-size: 16px;
-}
-
-@media (max-width: 1199px) {
-  .user-info-avatar {
-    width: 48px;
-    height: 48px;
-  }
-
-  .user-info-url-name {
-    font-size: 16px;
-  }
-
-  .user-info-stats {
+  @include mq-down(xl) {
     font-size: 12px;
   }
 }
