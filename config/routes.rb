@@ -1,16 +1,4 @@
 Rails.application.routes.draw do
-  root 'static_pages#home'
-  get 'signup', to: 'users#new'
-  post 'signup', to: 'users#create'
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
-  resources :users, only: %i[index new create destroy]
-  resources :feeds do
-    collection do
-      get 'discover'
-      post 'select'
-    end
-  end
-  get 'rss/:token', to: 'packs#rss', as: 'rss'
+  get "samples/index"
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

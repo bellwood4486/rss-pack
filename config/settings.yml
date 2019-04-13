@@ -1,8 +1,0 @@
-development:
-  rss_fresh_duration: 60
-
-test:
-  rss_fresh_duration: 60
-
-production:
-  rss_fresh_duration: 3600

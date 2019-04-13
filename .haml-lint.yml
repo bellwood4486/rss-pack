@@ -1,0 +1,7 @@
+linters:
+  LineLength:
+    max: 160
+  RuboCop:
+    enabled: true
+    exclude:
+      - app/views/kaminari/**/*

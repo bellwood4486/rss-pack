@@ -1,0 +1,56 @@
+.container
+  / Navigation
+  %nav.navbar.navbar-expand-md.navbar-dark.bg-dark
+    .container
+      / Brand and toggle get grouped for better mobile display
+      = link_to "Gem設定確認用", "#", class: "navbar-brand"
+      %button.navbar-toggler{ type: "button", "data-toggle": "collapse",
+      "data-target": "#main-navbar-collapse", "aria-expanded": "false",
+      "aria-label": "ナビゲーションの切替" }
+        %span.navbar-toggler-icon
+
+      / Collect the nav links, forms, and other content for toggling
+      .collapse.navbar-collapse#main-navbar-collapse
+        %ul.navbar-nav.mr-auto
+          %li.nav-item
+            = link_to "#", class: "nav-link" do
+              = fa_icon "home", text: "Bootstrap4"
+        %ul.navbar-nav
+          %li.nav-item
+            = link_to "#", class: "nav-link" do
+              = fa_icon "sticky-note", text: "←Font Awesome"
+          %li.nav-item.dropdown
+            %a.nav-link.dropdown-toggle#navbar-dropdown{ href: "#",
+            "data-toggle": "dropdown", role: "button",
+            "aria-haspopup": "true", "aria-expanded": "false" }
+              ドロップダウン
+            .dropdown-menu{ "aria-labelledby": "navbar-dropdown" }
+              = link_to "アカウント", "#", class: "dropdown-item"
+              .dropdown-divider
+              = link_to "ログアウト", "#", method: :delete, class: "dropdown-item"
+
+.row.justify-content-center
+  .col-6
+    %h1 Kaminariテスト
+    - samples = Kaminari.paginate_array(Array.new(10) {|i| "サンプル#{i}" }).page(2).per(3)
+    = paginate samples
+
+.row.justify-content-center
+  .col-6
+    %h1 simple_formテスト
+    %p
+      %h2 simple_form_for
+      = simple_form_for :sample do |f|
+        = f.input :email, placeholder: "sample@example.com",
+          hint: "これはヒントメッセージです"
+        = f.button :submit, class: "btn-primary"
+    %p
+      %h2 minimal_form_for
+      = minimal_form_for :sample do |f|
+        = f.input :email
+        = f.button :submit, class: "btn-primary"
+
+.row.justify-content-center
+  .col-6
+    %h1 time_formatsテスト
+    %p= Time.zone.now
