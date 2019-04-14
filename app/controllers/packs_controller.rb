@@ -1,5 +1,5 @@
 class PacksController < ApplicationController
-  before_action :set_pack, only: [:show, :edit, :update, :destroy]
+  before_action :set_pack, only: %i[show edit update destroy]
 
   def index
     @packs = current_user.packs
@@ -16,9 +16,9 @@ class PacksController < ApplicationController
   end
 
   def create
-    @pack = Pack.new(pack_params)
+    @pack = current_user.packs.build(pack_params)
     if @pack.save
-      redirect_to @pack, notice: "Pack was successfully created."
+      redirect_to @pack, notice: "パックを作成しました"
     else
       render :new
     end
@@ -26,7 +26,7 @@ class PacksController < ApplicationController
 
   def update
     if @pack.update(pack_params)
-      redirect_to @pack, notice: "Pack was successfully updated."
+      redirect_to @pack, notice: "パックを更新しました"
     else
       render :edit
     end
@@ -34,13 +34,13 @@ class PacksController < ApplicationController
 
   def destroy
     @pack.destroy!
-    redirect_to packs_url, notice: "Pack was successfully destroyed."
+    redirect_to packs_url, notice: "パックを削除しました"
   end
 
   private
 
     def set_pack
-      @pack = Pack.find(params[:id])
+      @pack = current_user.packs.find(params[:id])
     end
 
     def pack_params

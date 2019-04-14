@@ -1,20 +1,11 @@
-%h1 Listing packs
+.row.mb-4
+  .col
+    %h1
+      パック一覧
 
-%table
-  %thead
-    %tr
-      %th Name
-      %th
-      %th
-      %th
-
-  %tbody
-    - @packs.each do |pack|
-      %tr
-        %td= pack.name
-        %td= link_to "Show", pack
-        %td= link_to "Edit", edit_pack_path(pack)
-        %td= link_to "Destroy", pack, method: :delete, data: { confirm: "Are you sure?" }
+.row
+  .col-md-9
+    = render(partial: "pack", collection: @packs, spacer_template: "shared/default_divider") || "パックはまだありません"
 
 %br
 
