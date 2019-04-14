@@ -3,5 +3,7 @@ Rails.application.routes.draw do
 
   devise_for :users
 
-  resources :packs
+  resources :packs do
+    resources :feeds, only: %i[index new create destroy]
+  end
 end

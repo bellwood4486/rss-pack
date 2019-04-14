@@ -12,9 +12,6 @@ class PacksController < ApplicationController
     @pack = Pack.new
   end
 
-  def edit
-  end
-
   def create
     @pack = current_user.packs.build(pack_params)
     if @pack.save
@@ -22,6 +19,9 @@ class PacksController < ApplicationController
     else
       render :new
     end
+  end
+
+  def edit
   end
 
   def update
