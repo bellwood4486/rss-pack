@@ -1,0 +1,7 @@
+- bootstrap_key_conversion_map = { notice: :info, alert: :danger }.with_indifferent_access
+- flash.each do |key, value|
+  - key = bootstrap_key_conversion_map[key] || key
+  %div{ class: "alert alert-#{key} alert-dismissible fade show", role: "alert" }
+    %button.close{ type: "button", "data-dismiss": "alert", "aria-label": "Close" }
+      %span{ "aria-hidden": true } &times;
+    = value

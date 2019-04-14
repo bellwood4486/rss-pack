@@ -132,12 +132,6 @@ GEM
       haml (>= 4.0.6, < 6.0)
       html2haml (>= 1.0.1)
       railties (>= 4.0.1)
-    haml_lint (0.28.0)
-      haml (>= 4.0, < 5.1)
-      rainbow
-      rake (>= 10, < 13)
-      rubocop (>= 0.50.0)
-      sysexits (~> 1.1)
     html2haml (2.2.0)
       erubis (~> 2.7.0)
       haml (>= 4.0, < 6)
@@ -212,6 +206,7 @@ GEM
     parser (2.6.2.1)
       ast (~> 2.4.0)
     parslet (1.8.2)
+    pg (1.1.4)
     popper_js (1.14.5)
     psych (3.1.0)
     public_suffix (3.0.3)
@@ -329,7 +324,6 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.4.0)
-    sysexits (1.2.0)
     temple (0.8.1)
     thor (0.20.3)
     thread_safe (0.3.6)
@@ -381,7 +375,6 @@ DEPENDENCIES
   factory_bot_rails
   font-awesome-rails
   haml-rails
-  haml_lint
   jbuilder (~> 2.5)
   jquery-rails
   kaminari
@@ -391,6 +384,7 @@ DEPENDENCIES
   license_finder
   listen (>= 3.0.5, < 3.2)
   onkcop
+  pg (>= 0.18, < 2.0)
   puma (~> 3.11)
   rails (~> 5.2.3)
   rails-i18n
