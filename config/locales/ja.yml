@@ -1,0 +1,10 @@
+ja:
+  activerecord:
+    models:
+      feed: フィード
+      pack: パック
+    attributes:
+      feed:
+        url: URL
+      pack:
+        name: 名前
