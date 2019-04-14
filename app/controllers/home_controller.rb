@@ -7,6 +7,6 @@ class HomeController < ApplicationController
   private
 
     def require_guest
-      # redirect_to market_root_url if user_signed_in?
+      redirect_to packs_url if user_signed_in?
     end
 end
