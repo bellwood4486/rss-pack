@@ -2,7 +2,7 @@
 %nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
   .container
     / Brand and toggle get grouped for better mobile display
-    = link_to "RSS PACK", "#", class: "navbar-brand"
+    = link_to "RSS PACK", root_path, class: "navbar-brand"
     %button.navbar-toggler{ type: "button", "data-toggle": "collapse",
     "data-target": "#main-navbar-collapse",
     "aria-expanded": "false", "aria-label": "ナビゲーションの切替" }
@@ -12,7 +12,8 @@
     .collapse.navbar-collapse#main-navbar-collapse
       - if user_signed_in?
         %ul.navbar-nav.mr-auto
-        -# TODO: あとで足す
+          %li.nav-item
+            = link_to "パックを見る", packs_path, class: "nav-link"
         %ul.navbar-nav
           %li.nav-item.dropdown
             %a.nav-link.dropdown-toggle#navbar-dropdown{ href: "#",

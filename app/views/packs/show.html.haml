@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @pack.name
+
+= link_to "Edit", edit_pack_path(@pack)
+\|
+= link_to "Back", packs_path
