@@ -1,9 +1,9 @@
-%p#notice= notice
+.row.justify-content-center
+  .col-md-10
+    %p
+      %b Name:
+      = @pack.name
 
-%p
-  %b Name:
-  = @pack.name
-
-= link_to "Edit", edit_pack_path(@pack)
-\|
-= link_to "Back", packs_path
+    = link_to "編集", edit_pack_path(@pack)
+    \|
+    = link_to "削除", @pack, method: :delete, data: { confirm: "本当によろしいですか？" }

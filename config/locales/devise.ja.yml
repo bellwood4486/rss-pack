@@ -25,8 +25,11 @@ ja:
         unconfirmed_email: 未確認Eメール
         unlock_token: ロック解除用トークン
         updated_at: 更新日
+      pack:
+        name: 名前
     models:
       user: ユーザ
+      pack: パック
   devise:
     confirmations:
       confirmed: アカウントを登録しました。
