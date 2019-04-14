@@ -25,5 +25,8 @@ module RssPack
     end
 
     config.i18n.default_locale = :ja
+
+    routes.default_url_options[:host] = ENV["HOSTNAME"]
+    routes.default_url_options[:port] = ENV["PORT"]
   end
 end
