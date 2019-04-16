@@ -1,7 +1,8 @@
 class Pack < ApplicationRecord
   include Rails.application.routes.url_helpers
 
-  has_many :feeds, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+  has_many :feeds, through: :subscriptions
   has_secure_token
 
   def rss_url

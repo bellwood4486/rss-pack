@@ -1,0 +1,8 @@
+.row
+  .col
+    %div
+      = subscription.feed.title
+      %br
+      = subscription.feed.url
+    %div
+      = link_to "解除", pack_subscription_path(pack, subscription), method: :delete, data: { confirm: "本当によろしいですか？" }

@@ -2,6 +2,20 @@
   .col-6
     .page-header
       %h1
-        フィードの追加
+        購読対象の指定
 
-    = render "form"
+    %div
+      = simple_form_for(@feed_channel, url: pack_feeds_path(@pack)) do |f|
+        = f.input :url
+        = f.button :submit, "探す", class: "btn-primary"
+
+    - if @feeds.present?
+      %hr
+      %p
+        以下の候補が見つかりました。
+      %div
+        - @feeds.each do |feed|
+          = simple_form_for([@pack, Subscription.new]) do |f|
+            = f.input :feed_id, as: :hidden, input_html: { value: feed.id }
+            = link_to feed.title, feed.url, target: "_blank", rel: "noopener"
+            = f.submit "購読", class: "btn-primary"

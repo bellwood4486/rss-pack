@@ -4,7 +4,8 @@ Rails.application.routes.draw do
   devise_for :users
 
   resources :packs do
-    resources :feeds, only: %i[index new create destroy]
+    resources :feeds, only: %i[new create destroy]
+    resources :subscriptions, only: %i[index create destroy]
   end
 
   get "rss/:token", to: "packs#rss", as: "pack_rss"
