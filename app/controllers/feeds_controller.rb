@@ -2,22 +2,18 @@ class FeedsController < ApplicationController
   before_action :set_pack
   before_action :set_feed, only: :destroy
 
-  def index
-    # TODO: オーダー
-    @feeds = @pack.feeds
-  end
-
   def new
-    @feed = Feed.new
+    @feed_channel = Feeds::FeedChannel.new
   end
 
   def create
-    @feed = @pack.feeds.build(feed_params)
-    if @feed.save
-      redirect_to pack_feeds_url(@pack), notice: "フィードを追加しました"
-    else
-      render :new
-    end
+    @feed_channel = Feeds::FeedChannel.new(feed_channel_params)
+    render :new and return if @feed_channel.invalid?
+
+    @feeds = Feed.discover_and_save(@feed_channel.url)
+    flash.now.alert = "フィードが見つかりませんでした" if @feeds.blank?
+    # TODO: Ajax化してもよいかも。要検討
+    render :new
   end
 
   def destroy
@@ -35,7 +31,7 @@ class FeedsController < ApplicationController
       @feed = @pack.feeds.find(params[:id])
     end
 
-    def feed_params
-      params.require(:feed).permit(:url)
+    def feed_channel_params
+      params.require(:feeds_feed_channel).permit(:url)
     end
 end
