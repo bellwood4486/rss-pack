@@ -43,4 +43,12 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # タイムゾーンの設定(テスト環境用)
+  # テストPCは日本国内にあることを想定しているのためアプリケーションのタイムゾーンは日本にする。
+  config.time_zone = 'Asia/Tokyo'
+  # PostgreSQLのinitdbで設置したデータベースではシステムのタイムゾーンが使われるため、
+  # こちらは:localを指定する。
+  # 参照：https://www.postgresql.jp/document/10/html/app-initdb.html
+  config.active_record.default_timezone = :local
 end

@@ -58,4 +58,19 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # タイムゾーンの設定(開発環境用)
+  # 開発PCは日本国内にあることを想定しているのためアプリケーションのタイムゾーンは日本にする。
+  config.time_zone = 'Asia/Tokyo'
+  # PostgreSQLのinitdbで設置したデータベースではシステムのタイムゾーンが使われるため、
+  # こちらは:localを指定する。
+  # 参照：https://www.postgresql.jp/document/10/html/app-initdb.html
+  config.active_record.default_timezone = :local
+
+  # bullet
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.alert = true
+    Bullet.rails_logger = true
+  end
 end
