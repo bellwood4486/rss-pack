@@ -91,4 +91,9 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # タイムゾーンの設定
+  config.time_zone = 'Asia/Tokyo'
+  # HerokuのPostgreSQLのタイムゾーンは、デフォルトでUTCのためこちらは:utcにする。
+  config.active_record.default_timezone = :utc
 end

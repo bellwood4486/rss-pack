@@ -1,4 +1,5 @@
 class PacksController < ApplicationController
+  skip_before_action :authenticate_user!, only: :rss
   before_action :set_pack, only: %i[show edit update destroy]
   before_action :set_pack_by_token, only: :rss
 
@@ -39,8 +40,8 @@ class PacksController < ApplicationController
   end
 
   def rss
-    # TODO: 実装
-    render xml: "<xml>#{@pack.id}</xml>"
+    @pack.reload_rss
+    render xml: @pack.rss_content
   end
 
   private

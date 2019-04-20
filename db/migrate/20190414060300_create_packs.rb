@@ -4,6 +4,7 @@ class CreatePacks < ActiveRecord::Migration[5.2]
       t.references :user, foreign_key: true, null: false
       t.string :name, null: false
       t.string :token, null: false
+      t.text :rss_content
 
       t.timestamps
     end

@@ -10,15 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_14_113222) do
+ActiveRecord::Schema.define(version: 2019_04_17_134536) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "articles", force: :cascade do |t|
+    t.bigint "feed_id", null: false
+    t.string "title", null: false
+    t.string "link", null: false
+    t.datetime "published_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feed_id"], name: "index_articles_on_feed_id"
+  end
 
   create_table "feeds", force: :cascade do |t|
     t.string "url", null: false
     t.string "title", null: false
     t.string "content_type", null: false
+    t.string "etag"
+    t.text "rss_content"
+    t.datetime "reloaded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -27,6 +40,7 @@ ActiveRecord::Schema.define(version: 2019_04_14_113222) do
     t.bigint "user_id", null: false
     t.string "name", null: false
     t.string "token", null: false
+    t.text "rss_content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["token"], name: "index_packs_on_token", unique: true
@@ -36,6 +50,7 @@ ActiveRecord::Schema.define(version: 2019_04_14_113222) do
   create_table "subscriptions", force: :cascade do |t|
     t.bigint "pack_id"
     t.bigint "feed_id"
+    t.datetime "read_timestamp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["feed_id"], name: "index_subscriptions_on_feed_id"
@@ -54,6 +69,7 @@ ActiveRecord::Schema.define(version: 2019_04_14_113222) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "articles", "feeds"
   add_foreign_key "packs", "users"
   add_foreign_key "subscriptions", "feeds"
   add_foreign_key "subscriptions", "packs"
