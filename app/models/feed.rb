@@ -8,6 +8,8 @@ class Feed < ApplicationRecord
 
   before_save :update_reloaded_at
 
+  class FeedError < StandardError; end
+
   def self.discover!(url)
     discover(url).select(&:save)
   end
@@ -22,19 +24,19 @@ class Feed < ApplicationRecord
     end
   end
 
-  def reload_articles
+  def reload_articles!
     return unless reload_interval_spent?
 
-    fetched = Feeds::Fetcher.fetch(url, etag: etag)
+    fetched = Feeds::Fetcher.fetch!(url, etag: etag)
     return unless fetched[:modified?]
 
-    unless update({
+    update!({
       etag: fetched[:etag],
       rss_content: fetched[:body],
       articles: build_articles(fetched[:body]),
     })
-      # TODO: ログに残す
-    end
+  rescue => e
+    raise FeedError, "failed to reload articles. #{e.message}"
   end
 
   private

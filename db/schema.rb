@@ -51,6 +51,8 @@ ActiveRecord::Schema.define(version: 2019_04_17_134536) do
     t.bigint "pack_id"
     t.bigint "feed_id"
     t.datetime "read_timestamp"
+    t.text "message"
+    t.datetime "messaged_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["feed_id"], name: "index_subscriptions_on_feed_id"

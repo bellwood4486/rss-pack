@@ -11,15 +11,15 @@ class Pack < ApplicationRecord
     pack_rss_url(token)
   end
 
-  def reload_rss
-    update!(rss_content: create_rss(unread_articles!))
+  def reload_rss!
+    update!(rss_content: create_rss(unread_articles))
   end
 
   private
 
-    def unread_articles!
+    def unread_articles
       subscriptions.inject([]) do |articles, subscription|
-        articles.concat(subscription.unread_articles!)
+        articles.concat(subscription.unread_articles)
       end
     end
 
@@ -31,7 +31,7 @@ class Pack < ApplicationRecord
         maker.items.do_sort = true
         articles.each do |article|
           maker.items.new_item do |item|
-            item.title = article.title ||= "No title"
+            item.title = article.title
             item.link = article.link
             item.date = article.published_at.iso8601
           end

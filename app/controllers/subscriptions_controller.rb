@@ -1,10 +1,12 @@
 class SubscriptionsController < ApplicationController
   before_action :set_pack
-  # before_action :set_feed, only: :create
-  before_action :set_subscription, only: :destroy
+  before_action :set_subscription, only: %i[show destroy]
 
   def index
     @subscriptions = @pack.subscriptions
+  end
+
+  def show
   end
 
   def create

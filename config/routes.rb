@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   resources :packs do
     resources :feeds, only: %i[new create destroy]
-    resources :subscriptions, only: %i[index create destroy]
+    resources :subscriptions, only: %i[index show create destroy]
   end
 
   get "rss/:token", to: "packs#rss", as: "pack_rss"
