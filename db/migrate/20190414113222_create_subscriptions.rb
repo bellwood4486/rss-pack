@@ -4,6 +4,8 @@ class CreateSubscriptions < ActiveRecord::Migration[5.2]
       t.references :pack, foreign_key: true
       t.references :feed, foreign_key: true
       t.datetime :read_timestamp
+      t.text :message
+      t.datetime :messaged_at
 
       t.timestamps
     end

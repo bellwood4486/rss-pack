@@ -25,20 +25,20 @@ module Feeds
         end
       end
 
-      def fetch(url, etag: nil)
-        result = { modified?: false, etag: nil, body: nil }
-        uri = URI.parse(url)
-        return result if [uri.host, uri.port, uri.scheme].any?(&:blank?)
+      def fetch!(url, etag: nil)
+        uri = URI(url)
+        raise URI::InvalidURIError, "invalid url: #{url}" unless uri.respond_to? :request_uri
 
-        req = Net::HTTP::Get.new(uri.request_uri)
+        req = Net::HTTP::Get.new(uri)
         req["If-None-Match"] = etag
         res = Net::HTTP.start(uri.host, uri.port,
-                              use_ssl: uri.scheme.downcase == "https") do |http|
+                              use_ssl: uri.scheme == "https") do |http|
           http.open_timeout = 5
           http.read_timeout = 10
           http.request(req)
         end
 
+        result = { modified?: false, etag: nil, body: nil }
         case res
         when Net::HTTPSuccess
           result[:modified?] = true

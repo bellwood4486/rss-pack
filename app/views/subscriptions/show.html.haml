@@ -1,0 +1,7 @@
+.row.justify-content-center
+  .col-md-10
+    %h1
+      #{@subscription.feed.title}の購読情報
+    %p
+      %h2 メッセージ
+      = formatted_subscription_message(@subscription) || "メッセージはとくにありません"
