@@ -9,7 +9,7 @@ class Subscription < ApplicationRecord
       feed.reload_articles!
       clear_message!
     rescue Feed::FeedError => e
-      update_message!("フィードの取得ができませんでした。詳細：#{e.message}")
+      update_message!("フィードの取得ができませんでした。詳細：#{e}")
       return [subscribe_error_article("フィードの取得失敗")]
     end
 
