@@ -35,8 +35,10 @@ class Feed < ApplicationRecord
       rss_content: fetched[:body],
       articles: build_articles(fetched[:body]),
     })
-  rescue => e
-    raise FeedError, "failed to reload articles. #{e.message}"
+  rescue SocketError, URI::Error => e
+    raise FeedError, "failed to reload articles. #{e}"
+  rescue ActiveRecord::ActiveRecordError
+    raise FeedError, "failed to update the article record. #{e}"
   end
 
   private
