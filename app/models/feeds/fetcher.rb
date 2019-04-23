@@ -3,6 +3,11 @@ require "open-uri"
 
 module Feeds
   class Fetcher
+    RSS_MIME_TYPES = %w[
+      application/rss+xml
+      application/atom+xml
+    ].freeze
+
     class << self
       def discover(url)
         charset = nil
@@ -14,15 +19,23 @@ module Feeds
         rescue Errno::ENOENT, OpenURI::HTTPError, NoMethodError
           return []
         end
-        html_doc = Nokogiri::HTML.parse(html, nil, charset)
-        html_doc.xpath("//link[@rel='alternate']").map do |link|
-          attrs = link.attributes
-          {
-            content_type: attrs["type"]&.value,
-            title: attrs["title"]&.value,
-            url: attrs["href"]&.value,
-          }
+
+        parse_rss_feeds(html, charset)
+      end
+
+      def parse_rss_feeds(html_body, charset)
+        html_doc = Nokogiri::HTML.parse(html_body, nil, charset)
+        rss_feeds = []
+        RSS_MIME_TYPES.each do |rss_mime_type|
+          html_doc.xpath("//link[@rel='alternate' and @type='#{rss_mime_type}']").map do |link|
+            rss_feeds << {
+              content_type: link.attributes["type"]&.value,
+              title: link.attributes["title"]&.value,
+              url: link.attributes["href"]&.value,
+            }
+          end
         end
+        rss_feeds
       end
 
       def fetch!(url, etag: nil)
