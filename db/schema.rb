@@ -31,7 +31,7 @@ ActiveRecord::Schema.define(version: 2019_04_17_134536) do
     t.string "content_type", null: false
     t.string "etag"
     t.text "rss_content"
-    t.datetime "reloaded_at"
+    t.datetime "fetched_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

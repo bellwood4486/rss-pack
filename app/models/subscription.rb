@@ -7,10 +7,11 @@ class Subscription < ApplicationRecord
   def unread_articles
     begin
       feed.reload_articles!
-      clear_message!
     rescue Feed::FeedError => e
       update_message!("フィードの取得ができませんでした。詳細：#{e}")
       return [subscribe_error_article("フィードの取得失敗")]
+    else
+      clear_message!
     end
 
     articles = feed.articles.order(:published_at)
