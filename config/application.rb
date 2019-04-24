@@ -28,5 +28,6 @@ module RssPack
 
     routes.default_url_options[:host] = ENV["RSSPACK_HOSTNAME"]
     routes.default_url_options[:port] = ENV["RSSPACK_PORT"]
+    routes.default_url_options[:protocol] = "https" if Rails.env.production?
   end
 end
