@@ -1,0 +1,9 @@
+.row.justify-content-center
+  .col-md-10
+    %h1
+      #{@feed.title}のフィード詳細情報
+    %div
+      %ul
+        %li URL: #{@feed.url}
+        %li Etag: #{@feed.etag}
+        %li 取得日時: #{@feed.fetched_at}

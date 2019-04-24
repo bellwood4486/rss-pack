@@ -1,7 +1,7 @@
 .row
   .col
     %div
-      = subscription.feed.title
+      #{subscription.feed.title}(#{link_to "詳細", feed_path(subscription.feed)})
       %br
       = subscription.feed.url
       %br

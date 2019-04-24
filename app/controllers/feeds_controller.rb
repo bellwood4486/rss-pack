@@ -1,9 +1,12 @@
 class FeedsController < ApplicationController
-  before_action :set_pack
-  before_action :set_feed, only: :destroy
+  before_action :set_pack, only: %i[new create]
+  before_action :set_feed, only: %i[show destroy]
 
   def new
     @feed_channel = Feeds::FeedChannel.new
+  end
+
+  def show
   end
 
   def create
@@ -28,7 +31,7 @@ class FeedsController < ApplicationController
     end
 
     def set_feed
-      @feed = @pack.feeds.find(params[:id])
+      @feed = Feed.find(params[:id])
     end
 
     def feed_channel_params
