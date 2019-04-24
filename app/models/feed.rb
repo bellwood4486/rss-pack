@@ -6,8 +6,6 @@ class Feed < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :subscriptions, dependent: :nullify
 
-  before_save :update_reloaded_at
-
   class FeedError < StandardError; end
 
   def self.discover!(url)
@@ -25,29 +23,23 @@ class Feed < ApplicationRecord
   end
 
   def reload_articles!
-    return unless reload_interval_spent?
+    unless reload_interval_spent?
+      logger.debug "skip to fetch a feed(#{url}). because the interval time does not spent."
+      return
+    end
 
-    fetched = Feeds::Fetcher.fetch!(url, etag: etag)
-    return unless fetched[:modified?]
+    fetched = fetch_feed!
+    if fetched[:modified?]
+      logger.info "fetched a feed(#{url})."
+    else
+      logger.info "try to fetch a feed(#{url}). but it is not modified."
+      return
+    end
 
-    update!({
-      etag: fetched[:etag],
-      rss_content: fetched[:body],
-      articles: build_articles!(fetched[:body]),
-    })
-  rescue SocketError, URI::Error => e
-    raise FeedError, "failed to reload articles. #{e}"
-  rescue ActiveRecord::ActiveRecordError
-    raise FeedError, "failed to update the article record. #{e}"
+    update_feed!(fetched)
   end
 
   private
-
-    def update_reloaded_at
-      if etag_changed? || rss_content_changed?
-        self.reloaded_at = Time.zone.now
-      end
-    end
 
     def reload_interval_spent?
       return true if reloaded_at.blank?
@@ -91,5 +83,26 @@ class Feed < ApplicationRecord
           a.published_at = item.date
         end
       end
+    end
+
+    def fetch_feed!
+      begin
+        fetched = Feeds::Fetcher.fetch!(url, etag: etag)
+      rescue SocketError, URI::Error => e
+        raise FeedError, "failed to reload articles. #{e}"
+      else
+        update!(reloaded_at: Time.zone.now)
+      end
+      fetched
+    end
+
+    def update_feed!(fetched)
+      update!({
+        etag: fetched[:etag],
+        rss_content: fetched[:body],
+        articles: build_articles!(fetched[:body]),
+      })
+    rescue ActiveRecord::ActiveRecordError => e
+      raise FeedError, "failed to update the article record. #{e}"
     end
 end
