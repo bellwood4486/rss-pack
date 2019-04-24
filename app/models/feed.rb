@@ -1,7 +1,7 @@
 require "rss"
 
 class Feed < ApplicationRecord
-  RELOAD_INTERVAL = ENV["RSSPACK_FEED_RELOAD_INTERVAL"].to_i || 3600
+  FETCH_INTERVAL = ENV["RSSPACK_FEED_FETCH_INTERVAL"].to_i || 3600
 
   has_many :articles, dependent: :destroy
   has_many :subscriptions, dependent: :nullify
@@ -23,8 +23,8 @@ class Feed < ApplicationRecord
   end
 
   def reload_articles!
-    unless reload_interval_spent?
-      logger.debug "skip to fetch a feed(#{url}). because the interval time does not spent."
+    unless fetch_interval_spent?
+      logger.debug "skip to fetch feed(#{url}). the interval time does not spent."
       return
     end
 
@@ -32,7 +32,7 @@ class Feed < ApplicationRecord
     if fetched[:modified?]
       logger.info "fetched a feed(#{url})."
     else
-      logger.info "try to fetch a feed(#{url}). but it is not modified."
+      logger.info "try to fetch feed(#{url}). but it is not modified."
       return
     end
 
@@ -41,10 +41,10 @@ class Feed < ApplicationRecord
 
   private
 
-    def reload_interval_spent?
-      return true if reloaded_at.blank?
+    def fetch_interval_spent?
+      return true if fetched_at.blank?
 
-      (Time.zone.now - reloaded_at) > RELOAD_INTERVAL.seconds
+      (Time.zone.now - fetched_at) > FETCH_INTERVAL.seconds
     end
 
     def build_articles!(rss_content)
@@ -86,14 +86,9 @@ class Feed < ApplicationRecord
     end
 
     def fetch_feed!
-      begin
-        fetched = Feeds::Fetcher.fetch!(url, etag: etag)
-      rescue SocketError, URI::Error => e
-        raise FeedError, "failed to reload articles. #{e}"
-      else
-        update!(reloaded_at: Time.zone.now)
-      end
-      fetched
+      Feeds::Fetcher.fetch!(url, etag: etag)
+    rescue SocketError, URI::Error => e
+      raise FeedError, "failed to fetch feed(#{url}). #{e}"
     end
 
     def update_feed!(fetched)
@@ -101,6 +96,7 @@ class Feed < ApplicationRecord
         etag: fetched[:etag],
         rss_content: fetched[:body],
         articles: build_articles!(fetched[:body]),
+        fetched_at: Time.zone.now,
       })
     rescue ActiveRecord::ActiveRecordError => e
       raise FeedError, "failed to update the article record. #{e}"
