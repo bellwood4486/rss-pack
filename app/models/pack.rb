@@ -18,7 +18,7 @@ class Pack < ApplicationRecord
   private
 
     def unread_articles
-      subscriptions.inject([]) do |articles, subscription|
+      subscriptions.includes(:feed).inject([]) do |articles, subscription|
         articles.concat(subscription.unread_articles)
       end
     end

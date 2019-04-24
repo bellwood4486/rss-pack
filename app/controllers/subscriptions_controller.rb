@@ -3,7 +3,7 @@ class SubscriptionsController < ApplicationController
   before_action :set_subscription, only: %i[show destroy]
 
   def index
-    @subscriptions = @pack.subscriptions
+    @subscriptions = @pack.subscriptions.includes(:feed)
   end
 
   def show
