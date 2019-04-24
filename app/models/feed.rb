@@ -86,9 +86,14 @@ class Feed < ApplicationRecord
     end
 
     def fetch_feed!
-      Feeds::Fetcher.fetch!(url, etag: etag)
-    rescue SocketError, URI::Error => e
-      raise FeedError, "failed to fetch feed(#{url}). #{e}"
+      begin
+        feed = Feeds::Fetcher.fetch!(url, etag: etag)
+      rescue SocketError, URI::Error => e
+        raise FeedError, "failed to fetch feed(#{url}). #{e}"
+      else
+        update!(fetched_at: Time.zone.now)
+      end
+      feed
     end
 
     def update_feed!(fetched)
@@ -96,7 +101,6 @@ class Feed < ApplicationRecord
         etag: fetched[:etag],
         rss_content: fetched[:body],
         articles: build_articles!(fetched[:body]),
-        fetched_at: Time.zone.now,
       })
     rescue ActiveRecord::ActiveRecordError => e
       raise FeedError, "failed to update the article record. #{e}"
