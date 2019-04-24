@@ -62,6 +62,8 @@ module Feeds
       end
 
       def sanitize_etag(etag)
+        return if etag.blank?
+
         # Apache 2.4のmod_deflateのバグにより、Etagに'-gzip'というサフィックスが付けられてしまう場合があるため削る
         etag.gsub(/-gzip"$/, '"')
       end
