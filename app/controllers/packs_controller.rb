@@ -40,7 +40,7 @@ class PacksController < ApplicationController
   end
 
   def rss
-    @pack.reload_rss!
+    @pack.reload_rss! if params[:noreload].blank? # noreloadは主にデバッグ用
     render xml: @pack.rss_content
   end
 
