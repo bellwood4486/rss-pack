@@ -33,7 +33,7 @@ class Feed < ApplicationRecord
     update!({
       etag: fetched[:etag],
       rss_content: fetched[:body],
-      articles: build_articles(fetched[:body]),
+      articles: build_articles!(fetched[:body]),
     })
   rescue SocketError, URI::Error => e
     raise FeedError, "failed to reload articles. #{e}"
@@ -55,38 +55,40 @@ class Feed < ApplicationRecord
       (Time.zone.now - reloaded_at) > RELOAD_INTERVAL.seconds
     end
 
-    def build_articles(rss_content)
-      rss20 = parse_to_rss20(rss_content)
+    def build_articles!(rss_content)
+      begin
+        rss_feed = RSS::Parser.parse(rss_content)
+      rescue RSS::InvalidRSSError
+        rss_feed = RSS::Parser.parse(rss_content, false)
+      end
+
+      case rss_feed.feed_type
+      when "rss"
+        build_articles_for_rss(rss_feed)
+      when "atom"
+        build_articles_for_atom(rss_feed)
+      else
+        raise FeedError, "unsupport feed type. feed: #{rss_feed}"
+      end
+    end
+
+    def build_articles_for_atom(atom_feed)
+      atom_feed.entries.map do |entry|
+        Article.new do |a|
+          a.title = entry.title.content ||= "No title"
+          a.link = entry.link.href
+          a.published_at = entry.published.content
+        end
+      end
+    end
+
+    def build_articles_for_rss(rss_feed)
+      rss20 = rss_feed.to_rss("2.0")
       rss20.channel.items.map do |item|
         Article.new do |a|
           a.title = item.title ||= "No title"
           a.link = item.link
           a.published_at = item.date
-        end
-      end
-    end
-
-    def parse_to_rss20(rss_content)
-      begin
-        rss = RSS::Parser.parse(rss_content)
-      rescue RSS::InvalidRSSError
-        rss = RSS::Parser.parse(rss_content, false)
-      end
-
-      rss20 = rss.to_rss("2.0")
-      if rss.feed_type == "atom"
-        fix_rss20_link!(rss, rss20)
-      end
-      rss20
-    end
-
-    # atom -> rss20 変換時に、atom側のlink要素が複数あると期待したリンクが
-    # rss20に割当たらない問題を修復するためのコード
-    def fix_rss20_link!(atom, rss20)
-      atom.items.each_with_index do |atom_item, idx|
-        atom_link = atom_item.links.find {|l| l.rel == "alternate" }
-        if atom_link.present?
-          rss20.channel.items[idx].link = atom_link.href
         end
       end
     end
