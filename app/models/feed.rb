@@ -1,7 +1,7 @@
 require "rss"
 
 class Feed < ApplicationRecord
-  FETCH_INTERVAL = ENV["RSSPACK_FEED_FETCH_INTERVAL"].to_i || 3600
+  FETCH_INTERVAL = ENV["RSSPACK_FEED_FETCH_INTERVAL"]&.to_i || 3600
 
   has_many :articles, dependent: :destroy
   has_many :subscriptions, dependent: :nullify

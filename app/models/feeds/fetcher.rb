@@ -55,10 +55,15 @@ module Feeds
         case res
         when Net::HTTPSuccess
           result[:modified?] = true
-          result[:etag] = res["Etag"]
+          result[:etag] = sanitize_etag(res["Etag"])
           result[:body] = res.body.force_encoding("UTF-8")
         end
         result
+      end
+
+      def sanitize_etag(etag)
+        # Apache 2.4のmod_deflateのバグにより、Etagに'-gzip'というサフィックスが付けられてしまう場合があるため削る
+        etag.gsub(/-gzip"$/, '"')
       end
     end
   end
