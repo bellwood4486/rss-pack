@@ -20,7 +20,7 @@ class Pack < ApplicationRecord
   end
 
   def next_rss_reload_time
-    RSS_CREATE_INTERVAL.seconds.since rss_created_at
+    rss_created_at.present? ? RSS_CREATE_INTERVAL.seconds.since(rss_created_at) : nil
   end
 
   private
