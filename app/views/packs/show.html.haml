@@ -2,8 +2,9 @@
   .col-md-10
     %ul
       %li Name: #{@pack.name}
-      %li RSS作成日時: #{@pack.rss_created_at}
-      %li 次回RSS作成日時: #{@pack.next_rss_reload_time}
+      - if @pack.rss_created_at.present?
+        %li RSS作成日時: #{@pack.rss_created_at}
+        %li 次回RSS作成日時: #{@pack.next_rss_reload_time}
 
     = link_to "編集", edit_pack_path(@pack)
     \|
