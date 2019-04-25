@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2019_04_17_134536) do
     t.string "name", null: false
     t.string "token", null: false
     t.text "rss_content"
+    t.datetime "rss_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["token"], name: "index_packs_on_token", unique: true

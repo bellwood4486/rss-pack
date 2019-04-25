@@ -5,6 +5,7 @@ class CreatePacks < ActiveRecord::Migration[5.2]
       t.string :name, null: false
       t.string :token, null: false
       t.text :rss_content
+      t.datetime :rss_created_at
 
       t.timestamps
     end

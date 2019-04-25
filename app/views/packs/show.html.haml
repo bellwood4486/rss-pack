@@ -1,8 +1,9 @@
 .row.justify-content-center
   .col-md-10
-    %p
-      %b Name:
-      = @pack.name
+    %ul
+      %li Name: #{@pack.name}
+      %li RSS作成日時: #{@pack.rss_created_at}
+      %li 次回RSS作成日時: #{@pack.next_rss_reload_time}
 
     = link_to "編集", edit_pack_path(@pack)
     \|
