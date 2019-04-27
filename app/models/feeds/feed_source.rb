@@ -13,7 +13,7 @@ module Feeds
     def discover
       Feeds::Fetcher.discover(url).map do |discovered|
         feed = Feed.find_or_initialize_by(url: discovered[:url],
-                                          content_type: discovered[:content_type])
+                                          mime_type: discovered[:mime_type])
         # タイトルは常に最新のものを使う
         feed.title = discovered[:title] || "NO_NAME"
         feed.fetch

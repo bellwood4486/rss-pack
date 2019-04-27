@@ -29,7 +29,7 @@ module Feeds
         RSS_MIME_TYPES.each do |rss_mime_type|
           html_doc.xpath("//link[@rel='alternate' and @type='#{rss_mime_type}']").map do |link|
             rss_feeds << {
-              content_type: link.attributes["type"]&.value,
+              mime_type: link.attributes["type"]&.value,
               title: link.attributes["title"]&.value,
               url: link.attributes["href"]&.value,
             }
