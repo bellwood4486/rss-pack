@@ -3,17 +3,17 @@ class FeedsController < ApplicationController
   before_action :set_feed, only: %i[show destroy]
 
   def new
-    @feed_channel = Feeds::FeedChannel.new
+    @feed_source = Feeds::FeedSource.new
   end
 
   def show
   end
 
   def create
-    @feed_channel = Feeds::FeedChannel.new(feed_channel_params)
-    render :new and return if @feed_channel.invalid?
+    @feed_source = Feeds::FeedSource.new(feed_source_params)
+    render :new and return if @feed_source.invalid?
 
-    @feeds = Feed.discover!(@feed_channel.url)
+    @feeds = @feed_source.discover_and_save
     flash.now.alert = "フィードが見つかりませんでした" if @feeds.blank?
     # TODO: Ajax化してもよいかも。要検討
     render :new
@@ -34,7 +34,7 @@ class FeedsController < ApplicationController
       @feed = Feed.find(params[:id])
     end
 
-    def feed_channel_params
-      params.require(:feeds_feed_channel).permit(:url)
+    def feed_source_params
+      params.require(:feeds_feed_source).permit(:url)
     end
 end

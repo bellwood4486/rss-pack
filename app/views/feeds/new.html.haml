@@ -5,7 +5,7 @@
         購読対象の指定
 
     %div
-      = simple_form_for(@feed_channel, url: pack_feeds_path(@pack)) do |f|
+      = simple_form_for(@feed_source, url: pack_feeds_path(@pack)) do |f|
         = f.input :url
         = f.button :submit, "探す", class: "btn-primary"
 
