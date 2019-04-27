@@ -1,7 +1,12 @@
 .row.justify-content-center
   .col-md-10
     %h1
-      #{@subscription.feed.title}の購読情報
-    %p
-      %h2 メッセージ
-      = formatted_subscription_message(@subscription) || "メッセージはとくにありません"
+      購読情報
+    - if @subscription.message.present?
+      %p
+        メッセージ:
+        %br
+        = formatted_subscription_message(@subscription)
+    %div
+      = render partial: "feeds/feed", locals: { feed: @subscription.feed }
+

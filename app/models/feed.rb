@@ -79,7 +79,7 @@ class Feed < ApplicationRecord
       {
         channel_title: rss20.channel.title,
         channel_url: rss20.channel.link,
-        channel_description: rss20.channel.description,
+        channel_description: rss20.channel&.description,
         articles: articles,
       }
     end
@@ -96,7 +96,7 @@ class Feed < ApplicationRecord
       {
         channel_title: atom_feed.title.content,
         channel_url: atom_feed.links.find {|l| l.type == "text/html" }.href,
-        channel_description: atom_feed.subtitle.content,
+        channel_description: atom_feed.subtitle&.content,
         articles: articles,
       }
     end

@@ -15,7 +15,7 @@
         以下の候補が見つかりました。
       %div
         - @feeds.each do |feed|
+          = render partial: "feed", locals: { feed: feed }
           = simple_form_for([@pack, Subscription.new]) do |f|
             = f.input :feed_id, as: :hidden, input_html: { value: feed.id }
-            = link_to feed.title, feed.url, target: "_blank", rel: "noopener"
             = f.submit "購読", class: "btn-primary"

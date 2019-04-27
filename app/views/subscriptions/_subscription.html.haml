@@ -1,10 +1,14 @@
 .row
   .col
+    - feed = subscription.feed
     %div
-      #{subscription.feed.title}(#{link_to "詳細", feed_path(subscription.feed)})
+      %h4
+        = link_to feed.channel_title, feed.channel_url
+      %div
+        %small
+          = feed.channel_description
       %br
-      = subscription.feed.url
-      %br
+    %div
       = link_to "詳細", pack_subscription_path(pack, subscription)
-    %div
+      |
       = link_to "解除", pack_subscription_path(pack, subscription), method: :delete, data: { confirm: "本当によろしいですか？" }
