@@ -31,6 +31,9 @@ ActiveRecord::Schema.define(version: 2019_04_17_134536) do
     t.string "mime_type", null: false
     t.string "etag"
     t.datetime "fetched_at"
+    t.string "channel_title", null: false
+    t.string "channel_url", null: false
+    t.text "channel_description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
