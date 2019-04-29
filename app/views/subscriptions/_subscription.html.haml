@@ -3,7 +3,7 @@
     - feed = subscription.feed
     %div
       %h4
-        = link_to feed.channel_title, feed.channel_url
+        = feed_channel_link(feed)
       %div
         %small
           = feed.channel_description
