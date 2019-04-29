@@ -1,6 +1,7 @@
 class PacksController < ApplicationController
   skip_before_action :authenticate_user!, only: :rss
-  before_action :set_pack, only: %i[show edit update destroy]
+  before_action :set_pack, only: %i[edit update destroy]
+  before_action :set_pack_with_feed, only: :show
   before_action :set_pack_by_token, only: :rss
 
   def index
@@ -48,6 +49,10 @@ class PacksController < ApplicationController
 
     def set_pack
       @pack = current_user.packs.find(params[:id])
+    end
+
+    def set_pack_with_feed
+      @pack = current_user.packs.includes(subscriptions: :feed).find(params[:id])
     end
 
     def set_pack_by_token

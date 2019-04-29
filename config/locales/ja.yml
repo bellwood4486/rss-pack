@@ -8,3 +8,9 @@ ja:
         url: URL
       pack:
         name: 名前
+  activemodel:
+    models:
+      feeds/feed_source: フィードソース
+    attributes:
+      feeds/feed_source:
+        url: 購読サイトURL

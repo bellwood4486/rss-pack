@@ -1,11 +1,23 @@
-.row.justify-content-center
-  .col-md-10
-    %ul
-      %li Name: #{@pack.name}
-      - if @pack.rss_created_at.present?
-        %li RSS作成日時: #{@pack.rss_created_at}
-        %li 次回RSS作成日時: #{@pack.next_rss_reload_time}
-
+.row.mb-3
+  .col
+    %h1 #{@pack.name}の詳細
     = link_to "編集", edit_pack_path(@pack)
-    \|
-    = link_to "削除", @pack, method: :delete, data: { confirm: "本当によろしいですか？" }
+
+.row.mb-3
+  .col
+    .mb-3
+      - if @pack.rss_created_at.present?
+        %div RSS作成日時: #{@pack.rss_created_at}
+        %div 次回RSS作成日時: #{@pack.next_rss_reload_time}
+
+.row.mb-3
+  .col
+    %h2.mb-3
+      #{@pack.name}の購読一覧
+    .row
+      .col-9
+        = render(partial: "subscriptions/subscription", collection: @pack.subscriptions, locals: { pack: @pack },
+        spacer_template: "shared/default_divider") || "購読するフィードはまだ登録されていません"
+      .col-3
+        = link_to new_pack_feed_path(@pack), class: "btn btn-primary", role: "button" do
+          = fa_icon "plus", text: "フィードの購読"

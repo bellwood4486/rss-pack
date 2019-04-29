@@ -12,7 +12,7 @@ class SubscriptionsController < ApplicationController
   def create
     @subscription = @pack.subscriptions.build(subscription_params)
     if @subscription.save
-      redirect_to pack_subscriptions_url(@pack), notice: "購読を追加しました"
+      redirect_to pack_url(@pack), notice: "購読を追加しました"
     else
       redirect_to new_pack_feed_url(@pack), alert: "購読を追加できませんでした"
     end
@@ -20,7 +20,7 @@ class SubscriptionsController < ApplicationController
 
   def destroy
     @subscription.destroy!
-    redirect_to pack_subscriptions_url(@pack), notice: "フィードの購読を解除しました"
+    redirect_to pack_url(@pack), notice: "フィードの購読を解除しました"
   end
 
   private

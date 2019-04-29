@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   resources :packs do
     resources :feeds, only: %i[new create]
-    resources :subscriptions, only: %i[index show create destroy]
+    resources :subscriptions, only: %i[show create destroy]
   end
   resources :feeds, only: %i[show destroy]
 
