@@ -6,10 +6,10 @@ class Subscription < ApplicationRecord
 
   def unread_articles
     begin
-      feed.reload_articles!
+      feed.fetch_and_save!
     rescue Feed::FeedError => e
-      update_message!("フィードの取得ができませんでした。詳細：#{e}")
-      return [subscribe_error_article("フィードの取得失敗")]
+      update_message!("未読記事を取得ができませんでした。詳細：#{e}")
+      return [subscribe_error_article("未読記事の取得失敗")]
     else
       clear_message!
     end
