@@ -9,13 +9,12 @@
         = f.input :url
         = f.button :submit, "探す", class: "btn-primary"
 
-    - if @feeds.present?
+    - if @feed.present?
       %hr
       %p
         以下の候補が見つかりました。
       %div
-        - @feeds.each do |feed|
-          = render partial: "feed", locals: { feed: feed }
-          = simple_form_for([@pack, Subscription.new]) do |f|
-            = f.input :feed_id, as: :hidden, input_html: { value: feed.id }
-            = f.submit "購読", class: "btn-primary"
+        = render partial: "feed", locals: { feed: @feed }
+        = simple_form_for([@pack, Subscription.new]) do |f|
+          = f.input :feed_id, as: :hidden, input_html: { value: @feed.id }
+          = f.submit "購読", class: "btn-primary"
