@@ -13,8 +13,10 @@ class FeedsController < ApplicationController
     @feed_source = Feeds::FeedSource.new(feed_source_params)
     render :new and return if @feed_source.invalid?
 
-    @feeds = @feed_source.discover_and_save
-    flash.now.alert = "フィードが見つかりませんでした" if @feeds.blank?
+    @feed = @feed_source.discover
+    unless @feed&.save
+      flash.now.alert = "フィードが見つかりませんでした"
+    end
     # TODO: Ajax化してもよいかも。要検討
     render :new
   end
