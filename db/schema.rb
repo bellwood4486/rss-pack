@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 2019_04_17_134536) do
     t.string "title", null: false
     t.string "link", null: false
     t.datetime "published_at", null: false
+    t.text "summary"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["feed_id"], name: "index_articles_on_feed_id"

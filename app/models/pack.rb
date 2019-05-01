@@ -46,6 +46,7 @@ class Pack < ApplicationRecord
             item.title = article.title
             item.link = article.link
             item.date = article.published_at.iso8601
+            item.summary = article.summary
           end
         end
       end
