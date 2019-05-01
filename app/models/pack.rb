@@ -38,10 +38,8 @@ class Pack < ApplicationRecord
     end
 
     def create_rss(articles)
-      rss = RSS::Maker.make("2.0") do |maker|
-        maker.channel.title = "#{name} | RssPack"
-        maker.channel.link = pack_url(self)
-        maker.channel.description = "このフィードはRssPackで生成されています"
+      rss = RSS::Maker.make("atom") do |maker|
+        write_channel_to_maker!(maker)
         maker.items.do_sort = true
         articles.each do |article|
           maker.items.new_item do |item|
@@ -51,6 +49,15 @@ class Pack < ApplicationRecord
           end
         end
       end
-      rss.to_s
+      rss.to_xml
+    end
+
+    def write_channel_to_maker!(maker)
+      maker.channel.about = rss_url
+      maker.channel.title = "#{name} | RssPack"
+      maker.channel.link = pack_url(self)
+      maker.channel.description = "このフィードはRssPackで生成されています"
+      maker.channel.author = "RssPack"
+      maker.channel.date = Time.zone.now.iso8601
     end
 end
