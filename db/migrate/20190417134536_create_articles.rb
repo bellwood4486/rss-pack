@@ -5,6 +5,7 @@ class CreateArticles < ActiveRecord::Migration[5.2]
       t.string :title, null: false
       t.string :link, null: false
       t.datetime :published_at, null: false
+      t.text :summary
 
       t.timestamps
     end

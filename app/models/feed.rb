@@ -82,6 +82,7 @@ class Feed < ApplicationRecord
           a.title = item.title ||= "No title"
           a.link = item.link
           a.published_at = item.date
+          a.summary = item.description
         end
       end
 
@@ -99,6 +100,7 @@ class Feed < ApplicationRecord
           a.title = entry.title.content ||= "No title"
           a.link = entry.link.href
           a.published_at = entry.published.content
+          a.summary = entry.summary&.content
         end
       end
 
