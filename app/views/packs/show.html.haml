@@ -13,7 +13,7 @@
 .row.mb-3
   .col
     %h2.mb-3
-      #{@pack.name}の購読一覧
+      購読一覧
     .row
       .col-9
         = render(partial: "subscriptions/subscription", collection: @pack.subscriptions, locals: { pack: @pack },
