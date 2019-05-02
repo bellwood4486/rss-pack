@@ -19,9 +19,9 @@
             %a.nav-link.dropdown-toggle#navbar-dropdown{ href: "#",
             "data-toggle": "dropdown", role: "button", "aria-haspopup": "true",
             "aria-expanded": "false" }
-              アカウント
+              = current_user.email
             .dropdown-menu{ "aria-labelledby": "navbar-dropdown" }
-              -# TODO: あとで足す
+              = link_to "アカウント", edit_user_registration_path, class: "dropdown-item"
               .dropdown-divider
               = link_to "ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item"
       - else
