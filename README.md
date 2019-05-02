@@ -1,24 +1,69 @@
-# README
+# RSS PACK
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Sorry, this document is Japanese only
 
-Things you may want to cover:
+「RSS PACK」は、複数のRSSフィードを一つにまとめるサービスです。
 
-* Ruby version
+## System dependencies
 
-* System dependencies
+* Ruby 2.5.3
+* Ruby on Rails 5.2.3
+* PostgreSQL 10.4
 
-* Configuration
+## Setup
 
-* Database creation
+リポジトリをクローン後、以下を実行してください。
+```
+$ cd rss-pack
+$ bin/setup
+```
+コマンドが完了するとデータベースと一緒にデモ用のデータも作られます。
 
-* Database initialization
+以下のコマンドでサーバーを起動してください。
+```
+$ bin/rails s
+```
+サーバーが起動したらブラウザから次のURLにアクセスしてください。
+* メインサイト: http://localhost:3000
 
-* How to run the test suite
+デモ用のユーザーのログイン情報は以下のとおりです。
+* メインサイト用ユーザー
+  * メールアドレス：`test1@example.com`
+  * パスワード: `password`
 
-* Services (job queues, cache servers, search engines, etc.)
+## How to run the test suite
 
-* Deployment instructions
+テストは以下のコマンドから実行できます。
+```
+$ bin/rspec
+```
 
-* ...
+## Deployment instructions
+
+以下の手順でHerokuにデプロイすることができます。
+
+次のAddonをセットアップしてください。
+
+* [Heroku Postgres](https://devcenter.heroku.com/articles/heroku-postgresql)
+  
+以下の環境変数を設定してください。
+
+| 環境変数名 | 値 |
+----|----
+| DATABASE_URL | <Heroku PosgresのデータベースURL> |
+| TZ | Asia/Tokyo |
+| RSSPACK_HOSTNAME | <Heroku上のアプリのホスト名> |
+
+必要に応じて以下の設定が変更できます
+
+| 環境変数名 | 値 |
+----|----
+| RSSPACK_FEED_FETCH_INTERVAL | <購読先からフィードを取得する間隔(秒)。未指定時：3600秒> |
+| RSSPACK_PACK_RSS_CREATE_INTERVAL | <RssPackでまとめたフィードを更新する間隔(秒)。未指定時：3600秒 |
+
+以下のコマンドを実行します。
+```
+$ git push heroku master
+$ heroku run bin/rails db:migrate
+$ heroku open
+```
