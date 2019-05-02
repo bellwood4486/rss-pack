@@ -1,0 +1,20 @@
+.row.justify-content-center
+  .col-6
+    .page-header
+      %h1
+        購読対象の指定
+
+    %div
+      = simple_form_for(@feed_source, url: pack_feeds_path(@pack)) do |f|
+        = f.input :url, placeholder: "https://blog.example.com"
+        = f.button :submit, "探す", class: "btn-primary"
+
+    - if @feed.present?
+      %hr
+      %p
+        以下の候補が見つかりました。
+      %div
+        = render partial: "feed", locals: { feed: @feed }
+        = simple_form_for([@pack, Subscription.new]) do |f|
+          = f.input :feed_id, as: :hidden, input_html: { value: @feed.id }
+          = f.button :submit, "購読する", class: "btn-primary"

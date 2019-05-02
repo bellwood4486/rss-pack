@@ -1,0 +1,8 @@
+.row
+  .col
+    %div
+      = link_to pack.name, pack
+    %div
+      RSSフィードURL: #{pack.rss_url}
+    %div
+      購読フィード数: #{pack.subscriptions.count}

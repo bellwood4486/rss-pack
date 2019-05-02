@@ -1,53 +1,42 @@
-# frozen_string_literal: true
-
 class FeedsController < ApplicationController
-  before_action :load_feed, only: %i[destroy]
+  before_action :set_pack, only: %i[new create]
+  before_action :set_feed, only: %i[show destroy]
 
-  def index
-    @feeds = current_user.feeds
+  def new
+    @feed_source = Feeds::FeedSource.new
   end
 
-  def discover
-    @feed_source = FeedSource.new
-  end
-
-  def select
-    @feed_source = FeedSource.new(url: params[:feed_source][:url])
-    if @feed_source.valid?
-      @feeds = Feed.discover(@feed_source.url)
-      if @feeds.blank?
-        flash.now[:error] = 'フィードが見つかりませんでした。URLを見直してみてください。'
-        render :discover
-        return
-      end
-    else
-      render :discover
-    end
+  def show
   end
 
   def create
-    @feed = current_user.feeds.build(feed_create_params)
-    @feed.packs << current_user.packs.first # :TODO 決め打ちをあとでなおす
-    @feed.refresh
-    if @feed.save
-      redirect_to feeds_url, notice: '追加しました'
-    else
-      render :select
+    @feed_source = Feeds::FeedSource.new(feed_source_params)
+    render :new and return if @feed_source.invalid?
+
+    @feed = @feed_source.discover
+    unless @feed&.save
+      flash.now.alert = "フィードが見つかりませんでした"
     end
+    # TODO: Ajax化してもよいかも。要検討
+    render :new
   end
 
   def destroy
-    @feed.destroy
-    redirect_to feeds_url, notice: '削除しました'
+    @feed.destroy!
+    redirect_to pack_feeds_url(@pack), notice: "フィードを解除しました"
   end
 
   private
 
-  def feed_create_params
-    params.require(:feed).permit(:url, :title, :content_type)
-  end
+    def set_pack
+      @pack = current_user.packs.find(params[:pack_id])
+    end
 
-  def load_feed
-    @feed = Feed.find(params[:id])
-  end
+    def set_feed
+      @feed = Feed.find(params[:id])
+    end
+
+    def feed_source_params
+      params.require(:feeds_feed_source).permit(:url)
+    end
 end

@@ -1,0 +1,10 @@
+.row.justify-content-center
+  .col-4
+    .page-header
+      %h4
+        = t(".forgot_your_password")
+    = minimal_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+      = f.input :email, input_html: { autocomplete: "email" }
+      = f.button :submit, t(".send_me_reset_password_instructions"), class: "btn-primary"
+    %div
+      = render "devise/shared/links"

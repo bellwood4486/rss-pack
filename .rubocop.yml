@@ -1,10 +1,16 @@
+inherit_gem:
+  onkcop:
+    - "config/rubocop.yml"
+    - "config/rails.yml"
+    - "config/rspec.yml"
+
 AllCops:
-  TargetRubyVersion: 2.4
-
-Rails:
-  Enabled: true
-
-Style/AsciiComments:
-  Description: 'Use only ascii symbols in comments.'
-  StyleGuide: '#english-comments'
-  Enabled: false
+  TargetRubyVersion: 2.5
+  Exclude:
+    - 'bin/*'
+    - 'config/environments/*'
+    - 'config/initializers/*'
+    - 'db/schema.rb'
+    - 'spec/rails_helper.rb'
+    - 'spec/spec_helper.rb'
+    - "vendor/**/*"

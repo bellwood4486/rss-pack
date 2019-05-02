@@ -1,29 +1,30 @@
-%header.navbar.navbar-fixed-top.navbar-inverse
+/ Navigation
+%nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
   .container
-    = link_to 'rss pack', root_path, id: 'logo'
-    %nav
-      %ul.nav.navbar-nav.navbar-right
-        - if logged_in?
-          %li
-            = link_to discover_feeds_path do
-              = fa_icon 'lg fw inverse edit'
-              フィード登録
-          %li= link_to 'フィード一覧', feeds_path
-          %li.dropdown
-            %a.dropdown-toggle{'data-toggle' => 'dropdown', :href => '#'}
-              = "#{current_user.email}"
-              %b.caret
-            %ul.dropdown-menu
-              %li
-                = link_to '#' do
-                  = fa_icon 'fw user'
-                  マイページ
-              %li
-                = link_to '#' do
-                  = fa_icon 'fw cog'
-                  設定
-              %li.divider
-              %li
-                = link_to logout_path, method: :delete do
-                  = fa_icon 'fw sign-out'
-                  ログアウト
+    / Brand and toggle get grouped for better mobile display
+    = link_to "RSS PACK", root_path, class: "navbar-brand"
+    %button.navbar-toggler{ type: "button", "data-toggle": "collapse",
+    "data-target": "#main-navbar-collapse",
+    "aria-expanded": "false", "aria-label": "ナビゲーションの切替" }
+      %span.navbar-toggler-icon
+
+    / Collect the nav links, forms, and other content for toggling
+    .collapse.navbar-collapse#main-navbar-collapse
+      - if user_signed_in?
+        %ul.navbar-nav.mr-auto
+          %li.nav-item
+            = link_to "パック一覧", packs_path, class: "nav-link"
+        %ul.navbar-nav
+          %li.nav-item.dropdown
+            %a.nav-link.dropdown-toggle#navbar-dropdown{ href: "#",
+            "data-toggle": "dropdown", role: "button", "aria-haspopup": "true",
+            "aria-expanded": "false" }
+              = current_user.email
+            .dropdown-menu{ "aria-labelledby": "navbar-dropdown" }
+              = link_to "アカウント", edit_user_registration_path, class: "dropdown-item"
+              .dropdown-divider
+              = link_to "ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item"
+      - else
+        %ul.navbar-nav.ml-auto
+          %li.nav-item
+            = link_to "ログイン", new_user_session_path, class: "nav-link"

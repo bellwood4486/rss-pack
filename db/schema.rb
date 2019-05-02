@@ -10,44 +10,71 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170917142516) do
+ActiveRecord::Schema.define(version: 2019_04_17_134536) do
 
-  create_table "feeds", force: :cascade do |t|
-    t.string "url"
-    t.string "title"
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "articles", force: :cascade do |t|
+    t.bigint "feed_id", null: false
+    t.string "title", null: false
+    t.string "link", null: false
+    t.datetime "published_at", null: false
+    t.text "summary"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "content"
-    t.datetime "refreshed_at"
-    t.string "etag"
-    t.string "content_type"
-    t.integer "user_id"
-    t.index ["user_id"], name: "index_feeds_on_user_id"
+    t.index ["feed_id"], name: "index_articles_on_feed_id"
   end
 
-  create_table "feeds_packs", id: false, force: :cascade do |t|
-    t.integer "feed_id"
-    t.integer "pack_id"
-    t.index ["feed_id"], name: "index_feeds_packs_on_feed_id"
-    t.index ["pack_id"], name: "index_feeds_packs_on_pack_id"
+  create_table "feeds", force: :cascade do |t|
+    t.string "url", null: false
+    t.string "etag"
+    t.datetime "fetched_at"
+    t.string "channel_title", null: false
+    t.string "channel_url", null: false
+    t.text "channel_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "packs", force: :cascade do |t|
-    t.string "rss_token"
-    t.integer "user_id"
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "token", null: false
+    t.text "rss_content"
+    t.datetime "rss_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "rss_content"
-    t.datetime "rss_refreshed_at"
-    t.string "name"
+    t.index ["token"], name: "index_packs_on_token", unique: true
     t.index ["user_id"], name: "index_packs_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "email"
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "pack_id"
+    t.bigint "feed_id"
+    t.datetime "read_timestamp"
+    t.text "message"
+    t.datetime "messaged_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "password_digest"
+    t.index ["feed_id"], name: "index_subscriptions_on_feed_id"
+    t.index ["pack_id"], name: "index_subscriptions_on_pack_id"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "articles", "feeds"
+  add_foreign_key "packs", "users"
+  add_foreign_key "subscriptions", "feeds"
+  add_foreign_key "subscriptions", "packs"
 end

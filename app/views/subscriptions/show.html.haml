@@ -1,0 +1,12 @@
+.row.justify-content-center
+  .col-md-10
+    %h1
+      購読情報
+    - if @subscription.message.present?
+      %p
+        メッセージ:
+        %br
+        = formatted_subscription_message(@subscription)
+    %div
+      = render partial: "feeds/feed", locals: { feed: @subscription.feed }
+

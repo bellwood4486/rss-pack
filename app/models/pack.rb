@@ -1,81 +1,64 @@
-# frozen_string_literal: true
-
-# == Schema Information
-#
-# Table name: packs
-#
-#  id               :integer          not null, primary key
-#  rss_token        :string
-#  user_id          :integer
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  rss_content      :text
-#  rss_refreshed_at :datetime
-#  name             :string
-#
-
-require 'rss'
+require "rss"
 
 class Pack < ApplicationRecord
-  belongs_to :user
-  has_and_belongs_to_many :feeds
-  after_initialize :create_rss_token, if: -> { rss_token.blank? }
-  validates :rss_token, presence: true
+  include Rails.application.routes.url_helpers
 
-  def self.new_token
-    SecureRandom.urlsafe_base64
+  RSS_CREATE_INTERVAL = ENV["RSSPACK_PACK_RSS_CREATE_INTERVAL"]&.to_i || 3600
+
+  has_many :subscriptions, dependent: :destroy
+  has_many :feeds, through: :subscriptions
+  has_secure_token
+
+  def rss_url
+    pack_rss_url(token)
   end
 
-  def fresh?
-    rss_refreshed_at.present? &&
-        (Time.zone.now - rss_refreshed_at) <= EasySettings.rss_fresh_duration
+  def reload_rss!
+    return unless rss_create_interval_spent?
+
+    update!(rss_content: create_rss(unread_articles), rss_created_at: Time.zone.now)
   end
 
-  def refresh!(rss_url)
-    return if fresh?
-    update! rss_content: pack_feeds(rss_url), rss_refreshed_at: Time.zone.now
-  end
-
-  def clear_rss
-    update! rss_content: nil, rss_refreshed_at: nil
+  def next_rss_reload_time
+    rss_created_at.present? ? RSS_CREATE_INTERVAL.seconds.since(rss_created_at) : nil
   end
 
   private
 
-  def create_rss_token
-    self.rss_token = Pack.new_token
-  end
+    def rss_create_interval_spent?
+      return true if rss_created_at.blank?
 
-  def pack_feeds(rss_url)
-    merged_rss = RSS::Maker.make('2.0') do |maker|
-      make_pack_header maker, rss_url
-      make_pack_items maker
+      (Time.zone.now - rss_created_at) > RSS_CREATE_INTERVAL.seconds
     end
-    merged_rss.to_s
-  end
 
-  def make_pack_header(maker, rss_url)
-    maker.channel.title = 'RssPack'
-    maker.channel.link = rss_url
-    maker.channel.description = "#{rss_refreshed_at}以降の更新フィード"
-  end
-
-  def make_pack_items(maker)
-    maker.items.do_sort = true
-    feeds.each do |feed|
-      feed.refresh!
-      feed.rss20.channel.items.select { |i| should_pack?(i) }.map do |item|
-        maker.items.new_item do |new_item|
-          new_item.title = item.title ||= 'No title'
-          new_item.link = item.link
-          new_item.date = item.date
-        end
+    def unread_articles
+      subscriptions.includes(:feed).inject([]) do |articles, subscription|
+        articles.concat(subscription.unread_articles)
       end
     end
-  end
 
-  def should_pack?(rss20_item)
-    rss20_item.link.present? &&
-        (rss_refreshed_at.blank? || rss20_item.date > rss_refreshed_at)
-  end
+    def create_rss(articles)
+      rss = RSS::Maker.make("atom") do |maker|
+        write_channel_to_maker!(maker)
+        maker.items.do_sort = true
+        articles.each do |article|
+          maker.items.new_item do |item|
+            item.title = article.title
+            item.link = article.link
+            item.date = article.published_at.iso8601
+            item.summary = article.summary
+          end
+        end
+      end
+      rss.to_xml
+    end
+
+    def write_channel_to_maker!(maker)
+      maker.channel.about = rss_url
+      maker.channel.title = "#{name} | RssPack"
+      maker.channel.link = pack_url(self)
+      maker.channel.description = "このフィードはRssPackで生成されています"
+      maker.channel.author = "RssPack"
+      maker.channel.date = Time.zone.now.iso8601
+    end
 end

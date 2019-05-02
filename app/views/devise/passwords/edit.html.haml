@@ -1,0 +1,14 @@
+.row.justify-content-center
+  .col-4
+    .page-header
+      %h1
+        = t(".change_your_password")
+
+    = minimal_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
+      = f.input :reset_password_token, as: :hidden
+      = f.input :password, placeholder: t(".new_password"),
+        hint: password_length_hint(@minimum_password_length)
+      = f.input :password_confirmation, placeholder: t(".confirm_new_password")
+      = f.button :submit, t(".change_my_password"), class: "btn-primary"
+    %div
+      = render "devise/shared/links"

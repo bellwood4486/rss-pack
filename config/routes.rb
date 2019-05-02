@@ -1,16 +1,13 @@
 Rails.application.routes.draw do
-  root 'static_pages#home'
-  get 'signup', to: 'users#new'
-  post 'signup', to: 'users#create'
-  get 'login', to: 'sessions#new'
-  post 'login', to: 'sessions#create'
-  delete 'logout', to: 'sessions#destroy'
-  resources :users, only: %i[index new create destroy]
-  resources :feeds do
-    collection do
-      get 'discover'
-      post 'select'
-    end
+  root to: "home#index"
+
+  devise_for :users
+
+  resources :packs do
+    resources :feeds, only: %i[new create]
+    resources :subscriptions, only: %i[show create destroy]
   end
-  get 'rss/:token', to: 'packs#rss', as: 'rss'
+  resources :feeds, only: %i[show destroy]
+
+  get "rss/:token", to: "packs#rss", as: "pack_rss"
 end

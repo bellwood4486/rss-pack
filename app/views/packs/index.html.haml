@@ -1,0 +1,11 @@
+.row.mb-4
+  .col
+    %h1
+      パック一覧
+
+.row
+  .col-9
+    = render(partial: "pack", collection: @packs, spacer_template: "shared/default_divider") || "パックはまだありません"
+  .col-3
+    = link_to new_pack_path, class: "btn btn-primary", role: "button" do
+      = fa_icon "plus", text: "新しいパックを作る"

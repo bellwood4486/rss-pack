@@ -1,0 +1,12 @@
+.row.justify-content-center
+  .col-6
+    .page-header
+      %h1
+        パックの編集
+
+    = render "form"
+
+    %hr
+    = link_to @pack, method: :delete, data: { confirm: "本当によろしいですか？" },
+    class: "btn btn-danger", role: "button" do
+      = fa_icon "trash", text: "削除する"

@@ -1,91 +1,114 @@
-# frozen_string_literal: true
-
-# == Schema Information
-#
-# Table name: feeds
-#
-#  id           :integer          not null, primary key
-#  url          :string
-#  title        :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  content      :text
-#  refreshed_at :datetime
-#  etag         :string
-#  content_type :string
-#  user_id      :integer
-#
+require "rss"
 
 class Feed < ApplicationRecord
-  DEFAULT_TITLE = 'NO_NAME'
-  belongs_to :user
-  has_and_belongs_to_many :packs
-  before_save :update_refreshed_time, if: -> { content_changed? }
-  before_create :refresh, if: -> { content.nil? }
-  before_create :clear_pack_rss
-  before_destroy :clear_pack_rss
-  validates :content_type, presence: true
-  validates :url, presence: true
-  validates :title, presence: true
+  FETCH_INTERVAL = ENV["RSSPACK_FEED_FETCH_INTERVAL"]&.to_i || 3600
 
-  def refresh
-    assign_attributes(fetch_content)
+  has_many :articles, dependent: :destroy
+  has_many :subscriptions, dependent: :nullify
+
+  class FeedError < StandardError; end
+
+  def fetch_and_save!
+    fetch
+    save!
+  rescue ActiveRecord::ActiveRecordError => e
+    raise FeedError, "failed to save feed(#{url}). #{e}"
   end
 
-  def refresh!
-    update_attributes!(fetch_content)
-  end
+  def fetch
+    unless fetch_interval_spent?
+      logger.debug "skip to fetch feed(#{url}). the interval time does not spent."
+      return
+    end
 
-  def rss20
-    parse_as_rss20(content)
-  end
-
-  def self.discover(url)
-    Feeds::Fetcher.discover(url).map do |discovered|
-      Feed.new do |feed|
-        feed.title = discovered[:title] || DEFAULT_TITLE
-        feed.url = discovered[:url]
-        feed.content_type = discovered[:content_type]
-      end
+    content = fetch_content!
+    if content[:modified?]
+      logger.info "fetched a feed(#{url})."
+      assign_attributes(etag: content[:etag], **parse_content!(content[:body]))
+    else
+      logger.info "try to fetch feed(#{url}). but it is not modified."
     end
   end
 
   private
 
-  def fetch_content
-    f = Feeds::Fetcher.fetch url, etag: etag,
-                             response_body_if_not_modified: content
-    { etag: f[:etag], content: f[:body] }
-  end
+    def fetch_interval_spent?
+      return true if fetched_at.blank?
 
-  def parse_as_rss20(rss_source)
-    rss = nil
-    begin
-      rss = RSS::Parser.parse(rss_source)
-    rescue RSS::InvalidRSSError
-      rss = RSS::Parser.parse(rss_source, false)
+      (Time.zone.now - fetched_at) > FETCH_INTERVAL.seconds
     end
-    rss20 = rss.to_rss('2.0')
-    rss.feed_type == 'atom' ? fix_rss20_link(rss, rss20) : rss20
-  end
 
-  # atom -> rss20 変換時に、atom側のlink要素が複数あると期待したリンクが
-  # rss20に割当たらない問題を修復するためのコード
-  def fix_rss20_link(atom, rss20)
-    atom.items.each_with_index do |atom_item, idx|
-      atom_link = atom_item.links.find { |l| l.rel == 'alternate' }
-      next if atom_link.blank?
-      rss20.channel.items[idx].link = atom_link.href
+    def fetch_content!
+      begin
+        feed = Feeds::Fetcher.fetch!(url, etag: etag)
+      rescue SocketError, URI::Error => e
+        raise FeedError, "failed to fetch feed(#{url}). #{e}"
+      else
+        self.fetched_at = Time.zone.now
+      end
+      feed
     end
-    rss20
-  end
 
-  def update_refreshed_time
-    self.refreshed_at = Time.zone.now
-  end
+    def parse_content!(feed_content)
+      begin
+        rss_feed = RSS::Parser.parse(feed_content)
+      rescue RSS::InvalidRSSError
+        rss_feed = RSS::Parser.parse(feed_content, false)
+      end
 
-  def clear_pack_rss
-    packs.map(&:clear_rss)
-  end
+      case rss_feed
+      when RSS::RDF # for RSS 1.0
+        parse_rdf_feed(rss_feed)
+      when RSS::Rss # for RSS 0.9x/2.0
+        parse_rss_feed(rss_feed)
+      when RSS::Atom::Feed # for Atom
+        parse_atom_feed(rss_feed)
+      else
+        raise FeedError, "unsupport feed type. feed: #{rss_feed}"
+      end
+    end
 
+    def parse_rdf_feed(rdf_feed)
+      parse_rdf_or_rss_feed(rdf_feed.channel, rdf_feed.items)
+    end
+
+    def parse_rss_feed(rss_feed)
+      parse_rdf_or_rss_feed(rss_feed.channel, rss_feed.channel.items)
+    end
+
+    def parse_rdf_or_rss_feed(channel, items)
+      articles = items.map do |item|
+        Article.new do |a|
+          a.title = item.title ||= "No title"
+          a.link = item.link
+          a.published_at = item.date
+          a.summary = item.description
+        end
+      end
+
+      {
+        channel_title: channel.title,
+        channel_url: channel.link,
+        channel_description: channel&.description,
+        articles: articles,
+      }
+    end
+
+    def parse_atom_feed(atom_feed)
+      articles = atom_feed.entries.map do |entry|
+        Article.new do |a|
+          a.title = entry.title.content ||= "No title"
+          a.link = entry.link.href
+          a.published_at = entry.published.content
+          a.summary = entry.summary&.content
+        end
+      end
+
+      {
+        channel_title: atom_feed.title.content,
+        channel_url: atom_feed.links.find {|l| l.type == "text/html" }.href,
+        channel_description: atom_feed.subtitle&.content,
+        articles: articles,
+      }
+    end
 end

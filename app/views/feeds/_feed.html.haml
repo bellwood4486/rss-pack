@@ -1,0 +1,17 @@
+%div
+  %p
+    %h3
+      = feed_channel_link(feed)
+      %small
+        (#{link_to "RSS", feed.url})
+    最終取得: #{feed.fetched_at}
+  %p
+    %small
+      = feed.channel_description
+  %p
+    %ul
+      - feed.articles.order(:published_at).last(3).each do |article|
+        %li= article.title
+  %p
+    -# TODO: カウンターキャッシュ
+    #{feed.subscriptions.count}人が購読中

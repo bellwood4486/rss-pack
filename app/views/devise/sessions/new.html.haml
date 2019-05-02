@@ -1,0 +1,12 @@
+.row.justify-content-center
+  .col-4
+    .page-header
+      %h1
+        = t(".sign_in")
+    = minimal_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+      = f.input :email, input_html: { autocomplete: "email" }
+      = f.input :password
+      = f.input :remember_me, as: :boolean if devise_mapping.rememberable?
+      = f.button :submit, t(".sign_in"), class: "btn-primary"
+    %div
+      = render "devise/shared/links"
