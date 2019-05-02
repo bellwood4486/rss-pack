@@ -3,6 +3,6 @@
     %div
       = link_to pack.name, pack
     %div
-      = pack.rss_url
+      RSSフィードURL: #{pack.rss_url}
     %div
-      = link_to "購読一覧", pack_subscriptions_path(pack)
+      購読フィード数: #{pack.subscriptions.count}
