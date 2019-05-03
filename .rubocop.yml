@@ -4,6 +4,15 @@ inherit_gem:
     - "config/rails.yml"
     - "config/rspec.yml"
 
+# receiveとhave_receivedは挙動が大きく異なる(.and_returnを繋げられないなど)ため、
+# receiveを許容する
+RSpec/MessageSpies:
+  Enabled: false
+
+# 長さを優先して記述が分散すると逆に読みづらくなるため無効
+RSpec/ExampleLength:
+  Enabled: false
+
 AllCops:
   TargetRubyVersion: 2.5
   Exclude:

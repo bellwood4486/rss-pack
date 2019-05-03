@@ -32,7 +32,6 @@ group :development, :test do
   gem "dotenv-rails"
   gem "factory_bot_rails"
   gem "onkcop", require: false
-  gem "rspec-rails"
 end
 
 group :development do
@@ -53,6 +52,7 @@ end
 group :test do
   gem "capybara", ">= 2.15"
   gem "chromedriver-helper"
+  gem "rspec-rails"
   gem "selenium-webdriver"
 end
 

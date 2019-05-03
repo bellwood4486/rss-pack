@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :subscription do
-    pack { nil }
-    feed { nil }
+    pack
+    feed
   end
 end
