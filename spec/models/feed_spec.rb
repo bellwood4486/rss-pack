@@ -1,6 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Feed, type: :model do
+  it "有効なファクトリをもつこと" do
+    expect(build(:feed)).to be_valid
+  end
+
+  it "フィードURLがなければ無効な状態を示す例外をスローすること" do
+    feed = build(:feed, url: nil)
+    expect { feed.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /を入力してください/)
+  end
+
+  it "チャネルタイトルがなければ無効な状態を示す例外をスローすること" do
+    feed = build(:feed, channel_title: nil)
+    expect { feed.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /を入力してください/)
+  end
+
   describe "fetch" do
     context "まだ一度もフェッチしたことがない場合" do
       it "フィードの取得を実行すること" do
