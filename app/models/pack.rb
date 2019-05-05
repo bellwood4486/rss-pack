@@ -10,6 +10,8 @@ class Pack < ApplicationRecord
   has_many :feeds, through: :subscriptions
   has_secure_token
 
+  validates :name, presence: true
+
   def rss_url
     pack_rss_url(token)
   end

@@ -1,6 +1,16 @@
 require "rails_helper"
 
 RSpec.describe Pack, type: :model do
+  it "有効なファクトリをもつこと" do
+    expect(build(:pack)).to be_valid
+  end
+
+  it "パック名がなければ無効な状態であること" do
+    pack = build(:pack, name: nil)
+    pack.valid?
+    expect(pack.errors[:name]).to include("を入力してください")
+  end
+
   describe "rss_url" do
     it "トークンを含むURLを返すこと" do
       pack = create(:pack)
