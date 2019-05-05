@@ -61,4 +61,5 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include ActiveSupport::Testing::TimeHelpers
+  config.include Rails.application.routes.url_helpers  # url_for
 end
