@@ -3,6 +3,9 @@ class Article < ApplicationRecord
 
   belongs_to :feed
 
+  validates! :title, presence: true
+  validates! :link, presence: true
+
   scope :published_since, ->(datetime) { where("published_at > ?", datetime) }
 
   before_validation :truncate_summary
