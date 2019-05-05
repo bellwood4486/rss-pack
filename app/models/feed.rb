@@ -4,6 +4,9 @@ class Feed < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :subscriptions, dependent: :nullify
 
+  validates! :url, presence: true
+  validates! :channel_title, presence: true
+
   class FeedError < StandardError; end
 
   def fetch_and_save!
