@@ -1,6 +1,16 @@
 require "rails_helper"
 
 RSpec.describe Pack, type: :model do
+  it "有効なファクトリをもつこと" do
+    expect(build(:pack)).to be_valid
+  end
+
+  it "パック名がなければ無効な状態であること" do
+    pack = build(:pack, name: nil)
+    pack.valid?
+    expect(pack.errors[:name]).to include("を入力してください")
+  end
+
   describe "rss_url" do
     it "トークンを含むURLを返すこと" do
       pack = create(:pack)
@@ -84,33 +94,30 @@ RSpec.describe Pack, type: :model do
 
     context "まだ一度もリロードしたことがない場合" do
       it "パックのRSSのリロードを行うこと" do
-        pack = create(:pack, rss_created_at: nil)
+        pack = create(:pack, rss_content: nil, rss_created_at: nil)
 
-        expect(pack).to receive(:update!)
-        pack.reload_rss!
+        expect { pack.reload_rss! }.to change(pack, :rss_content)
       end
     end
 
     context "リロードされたことがあり、かつ、パックのリロード間隔が経過していた場合" do
       it "パックのRSSのリロードを行うこと" do
-        pack = create(:pack, rss_created_at: Time.zone.now)
+        pack = create(:pack, rss_content: nil, rss_created_at: Time.zone.now)
 
         stub_const("Pack::RSS_CREATE_INTERVAL", 10)
         travel_to(11.seconds.since(pack.rss_created_at)) do
-          expect(pack).to receive(:update!)
-          pack.reload_rss!
+          expect { pack.reload_rss! }.to change(pack, :rss_content)
         end
       end
     end
 
     context "リロードされたことがあり、かつ、パックのリロード間隔が経過していない場合" do
       it "パックのRSSのリロードを行わないこと" do
-        pack = create(:pack, rss_created_at: Time.zone.now)
+        pack = create(:pack, rss_content: nil, rss_created_at: Time.zone.now)
 
         stub_const("Pack::RSS_CREATE_INTERVAL", 10)
         travel_to(9.seconds.since(pack.rss_created_at)) do
-          expect(pack).not_to receive(:update!)
-          pack.reload_rss!
+          expect { pack.reload_rss! }.not_to change(pack, :rss_content)
         end
       end
     end
@@ -123,13 +130,13 @@ RSpec.describe Pack, type: :model do
       expect(pack.next_rss_reload_time).to eq Time.zone.parse("2019/1/1 09:00:01")
     end
   end
-end
 
-def article_mock(title: "dummy_title", link: "dummy_link",
-                 summary: "dummy_summary", published_at: Time.zone.now)
-  instance_double("Article",
-                  title: title,
-                  link: link,
-                  summary: summary,
-                  published_at: published_at)
+  def article_mock(title: "dummy_title", link: "dummy_link",
+                   summary: "dummy_summary", published_at: Time.zone.now)
+    instance_double("Article",
+                    title: title,
+                    link: link,
+                    summary: summary,
+                    published_at: published_at)
+  end
 end
