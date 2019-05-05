@@ -5,9 +5,12 @@ class Pack < ApplicationRecord
 
   RSS_CREATE_INTERVAL = ENV["RSSPACK_PACK_RSS_CREATE_INTERVAL"]&.to_i || 3600
 
+  belongs_to :user
   has_many :subscriptions, dependent: :destroy
   has_many :feeds, through: :subscriptions
   has_secure_token
+
+  validates :name, presence: true
 
   def rss_url
     pack_rss_url(token)
@@ -25,10 +28,10 @@ class Pack < ApplicationRecord
 
   private
 
-    def rss_create_interval_spent?
+    def rss_create_interval_spent?(time = Time.zone.now)
       return true if rss_created_at.blank?
 
-      (Time.zone.now - rss_created_at) > RSS_CREATE_INTERVAL.seconds
+      (time - rss_created_at) > RSS_CREATE_INTERVAL.seconds
     end
 
     def unread_articles
