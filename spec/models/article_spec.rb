@@ -1,6 +1,20 @@
 require "rails_helper"
 
 RSpec.describe Article, type: :model do
+  it "有効なファクトリをもつこと" do
+    expect(build(:article)).to be_valid
+  end
+
+  it "タイトルがなければ無効な状態とみなし例外をスローすること" do
+    article = build(:article, title: nil)
+    expect { article.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /を入力してください/)
+  end
+
+  it "リンクがなければ無効な状態とみなし例外をスローすること" do
+    article = build(:article, link: nil)
+    expect { article.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /を入力してください/)
+  end
+
   describe "scope published_since" do
     it "指定した公開日時よりあとの記事のみに絞ること" do
       create(:article, published_at: Time.zone.parse("2019/1/1 00:00:00"))
