@@ -9,7 +9,7 @@ class Subscription < ApplicationRecord
       feed.fetch_and_save!
     rescue Feed::FeedError => e
       update_message!("未読記事を取得ができませんでした。詳細：#{e}")
-      return [subscribe_error_article("未読記事の取得失敗")]
+      return [subscribe_error_article("未読記事の取得失敗", e)]
     else
       clear_message!
     end
@@ -22,10 +22,11 @@ class Subscription < ApplicationRecord
 
   private
 
-    def subscribe_error_article(error_summary)
+    def subscribe_error_article(error_summary, error)
       Article.new do |a|
         a.title = "[RSSPACKからのお知らせ]#{error_summary}"
         a.link = pack_subscription_url(pack, self)
+        a.summary = error.message
         a.published_at = Time.zone.now
       end
     end
