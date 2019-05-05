@@ -6,6 +6,19 @@ RSpec.describe Subscription, type: :model do
   end
 
   describe "unread_articles" do
+    it "有効なファクトリをもつこと" do
+      expect(build(:subscription)).to be_valid
+    end
+
+    it "一つのパック内で、同じフィードに対する購読が複数するのは不正な状態とみなし、例外をスローすること" do
+      pack = create(:pack)
+      feed = create(:feed)
+      create(:subscription, pack: pack, feed: feed)
+
+      subscription = build(:subscription, pack: pack, feed: feed)
+      expect { subscription.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /はすでに存在します/)
+    end
+
     context "フィードの情報取得が成功した場合" do
       let(:subscription) { create(:subscription, feed: feed) }
 

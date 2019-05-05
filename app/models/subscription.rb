@@ -4,6 +4,8 @@ class Subscription < ApplicationRecord
   belongs_to :pack
   belongs_to :feed
 
+  validates! :feed, uniqueness: { scope: :pack }
+
   def unread_articles
     begin
       feed.fetch_and_save!
