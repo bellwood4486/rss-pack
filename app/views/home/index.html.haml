@@ -1,6 +1,11 @@
-.row.text-center
-  .col
-    %p.lead
-      RSS PACKでは好きなRSSフィードをまとめることができます。
-    %p
-      = link_to "ユーザー登録する", new_user_registration_path, class: "btn btn-lg btn-primary"
+- content_for :jumbotron do
+  .jumbotron
+    .bg
+    .container.text-center
+      .molding
+        .display-4
+          Let's pack your feeds!
+        %p.lead
+          RSS PACKでは好きなRSSフィードをまとめることができます。
+      %p
+        = link_to "ユーザー登録する", new_user_registration_path, class: "btn btn-lg btn-primary"
