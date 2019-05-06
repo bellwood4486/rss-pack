@@ -11,16 +11,16 @@ RSpec.describe Pack, type: :model do
     expect(pack.errors[:name]).to include("を入力してください")
   end
 
-  describe "rss_url" do
+  describe "#rss_url" do
+    let(:pack) { create(:pack) }
+
     it "トークンを含むURLを返すこと" do
-      pack = create(:pack)
       expect(pack.rss_url).to include pack.token
     end
   end
 
-  describe "reload_rss!" do
+  describe "#reload_rss!" do
     let(:pack) { create(:pack, rss_created_at: nil) }
-
     let(:subscription_mocks) do
       mocks = []
       # 以下のケースにおいてRubyMine(2018.3.5)のブレイクポイントが止まらない事象が発生するため、その回避コード
@@ -28,11 +28,11 @@ RSpec.describe Pack, type: :model do
       # - receiveメソッドを使い、かつand_returnメソッドにdoubleオブジェクトを渡す
       def mocks.includes(*_symbols)
       end
+
       allow(mocks).to receive(:includes).and_return(mocks)
 
       mocks
     end
-
     let(:rss_xml_namespaces) do
       {
         xmlns: "http://www.w3.org/2005/Atom",
@@ -93,40 +93,40 @@ RSpec.describe Pack, type: :model do
     end
 
     context "まだ一度もリロードしたことがない場合" do
-      it "パックのRSSのリロードを行うこと" do
-        pack = create(:pack, rss_content: nil, rss_created_at: nil)
+      let(:pack) { create(:pack, rss_content: nil, rss_created_at: nil) }
 
-        expect { pack.reload_rss! }.to change(pack, :rss_content)
+      it "パックのRSSのリロードを行うこと" do
+        expect { pack.reload_rss! }.to change { pack.rss_content }
       end
     end
 
     context "リロードされたことがあり、かつ、パックのリロード間隔が経過していた場合" do
-      it "パックのRSSのリロードを行うこと" do
-        pack = create(:pack, rss_content: nil, rss_created_at: Time.zone.now)
+      let(:pack) { create(:pack, rss_content: nil, rss_created_at: Time.zone.now) }
 
+      it "パックのRSSのリロードを行うこと" do
         stub_const("Pack::RSS_CREATE_INTERVAL", 10)
         travel_to(11.seconds.since(pack.rss_created_at)) do
-          expect { pack.reload_rss! }.to change(pack, :rss_content)
+          expect { pack.reload_rss! }.to change { pack.rss_content }
         end
       end
     end
 
     context "リロードされたことがあり、かつ、パックのリロード間隔が経過していない場合" do
+      let(:pack) { create(:pack, rss_content: nil, rss_created_at: Time.zone.now) }
       it "パックのRSSのリロードを行わないこと" do
-        pack = create(:pack, rss_content: nil, rss_created_at: Time.zone.now)
-
         stub_const("Pack::RSS_CREATE_INTERVAL", 10)
         travel_to(9.seconds.since(pack.rss_created_at)) do
-          expect { pack.reload_rss! }.not_to change(pack, :rss_content)
+          expect { pack.reload_rss! }.not_to change { pack.rss_content }
         end
       end
     end
   end
 
-  describe "next_rss_reload_time" do
+  describe "#next_rss_reload_time" do
+    let(:pack) { create(:pack, rss_created_at: Time.zone.parse("2019/1/1 09:00:00")) }
+
     it "リロード間隔分だけ将来の時刻を返すこと" do
       stub_const("Pack::RSS_CREATE_INTERVAL", 1)
-      pack = create(:pack, rss_created_at: Time.zone.parse("2019/1/1 09:00:00"))
       expect(pack.next_rss_reload_time).to eq Time.zone.parse("2019/1/1 09:00:01")
     end
   end

@@ -15,18 +15,21 @@ RSpec.describe Article, type: :model do
     expect { article.valid? }.to raise_error(ActiveModel::StrictValidationFailed, /を入力してください/)
   end
 
-  describe "scope published_since" do
+  describe ".published_since" do
+    let(:jan_1) { Time.zone.parse("2019/1/1 00:00:00") }
+    let(:jan_2) { Time.zone.parse("2019/1/2 00:00:00") }
+
     it "指定した公開日時よりあとの記事のみに絞ること" do
-      create(:article, published_at: Time.zone.parse("2019/1/1 00:00:00"))
-      create(:article, published_at: Time.zone.parse("2019/1/2 00:00:00"))
+      create(:article, published_at: jan_1)
+      create(:article, published_at: jan_2)
 
-      actual_articles = Article.published_since(Time.zone.parse("2019/1/1 00:00:00"))
+      actual_articles = Article.published_since jan_1
 
-      expect(actual_articles.pluck(:published_at)).to match_array [Time.zone.parse("2019/1/2 00:00:00")]
+      expect(actual_articles.pluck(:published_at)).to match_array [jan_2]
     end
   end
 
-  describe "before_validation truncate_summary" do
+  describe "before_validation :truncate_summary" do
     it "サマリーが最大長を超えている場合、末尾を切ること" do
       stub_const("Article::SUMMARY_MAX_LENGTH", 5)
       article = build(:article, summary: "a" * 10)
