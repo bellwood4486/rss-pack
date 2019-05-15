@@ -76,6 +76,11 @@ RSpec.describe Feed, type: :model do
         allow(Feeds::Fetcher).to receive(:fetch!).and_raise(SocketError)
         expect { feed.fetch }.to raise_error(Feed::FeedError)
       end
+
+      it "OpenSSL::SSLErrorがスローされたらFeedErrorをスローすること" do
+        allow(Feeds::Fetcher).to receive(:fetch!).and_raise(OpenSSL::OpenSSLError)
+        expect { feed.fetch }.to raise_error(Feed::FeedError)
+      end
     end
   end
 
