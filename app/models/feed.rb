@@ -42,7 +42,7 @@ class Feed < ApplicationRecord
     def fetch_content!
       begin
         feed = Feeds::Fetcher.fetch!(url, etag: etag)
-      rescue SocketError, URI::Error => e
+      rescue SocketError, URI::Error, OpenSSL::OpenSSLError => e
         raise FeedError, "failed to fetch feed(#{url}). #{e}"
       else
         self.fetched_at = Time.zone.now
