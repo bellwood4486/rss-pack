@@ -1,8 +1,6 @@
 # RSS PACK
 
-Sorry, this document is Japanese only
-
-「RSS PACK」は、複数のRSSフィードを一つにまとめるサービスです。
+RSS PACK is a service that combines your RSS feeds into one.
 
 ## System dependencies
 
@@ -12,56 +10,55 @@ Sorry, this document is Japanese only
 
 ## Setup
 
-リポジトリをクローン後、以下を実行してください。
+After cloning this repository, run the following command:
+Clone this repository, and run the following command:
 ```
 $ cd rss-pack
 $ bin/setup
 ```
-コマンドが完了するとデータベースと一緒にデモ用のデータも作られます。
+A database is created with demo data when the command completes.
 
-以下のコマンドでサーバーを起動してください。
+Start the server with the following command:
 ```
 $ bin/rails s
 ```
-サーバーが起動したらブラウザから次のURLにアクセスしてください。
-* メインサイト: http://localhost:3000
+Access the following URL with your browser.
+* http://localhost:3000
 
-デモ用のユーザーのログイン情報は以下のとおりです。
-* メインサイト用ユーザー
-  * メールアドレス：`test1@example.com`
-  * パスワード: `password`
+The login information for the demo user is as follows.
+* Email：`test1@example.com`
+* Password: `password`
 
 ## How to run the test suite
 
-テストは以下のコマンドから実行できます。
+This project uses Rspec. Run the following command:
 ```
 $ bin/rspec
 ```
 
 ## Deployment instructions
 
-以下の手順でHerokuにデプロイすることができます。
+Follow the steps to deploy on Heroku.
 
-次のAddonをセットアップしてください。
-
+Set up the Addon.
 * [Heroku Postgres](https://devcenter.heroku.com/articles/heroku-postgresql)
   
-以下の環境変数を設定してください。
+Set the following environment variables:
 
-| 環境変数名 | 値 |
+| Name | Value |
 ----|----
-| DATABASE_URL | <Heroku PosgresのデータベースURL> |
-| TZ | Asia/Tokyo |
-| RSSPACK_HOSTNAME | <Heroku上のアプリのホスト名> |
+| DATABASE_URL | (Database URL on Heroku) |
+| TZ | (Timezone of the app (ex: Asia/Tokyo)) |
+| RSSPACK_HOSTNAME | (Hostname of the app on Heroku) |
 
-必要に応じて以下の設定が変更できます
+You can change the following settings as need.
 
-| 環境変数名 | 値 |
+| Name | Value |
 ----|----
-| RSSPACK_FEED_FETCH_INTERVAL | <購読先からフィードを取得する間隔(秒)。未指定時：3600秒> |
-| RSSPACK_PACK_RSS_CREATE_INTERVAL | <RssPackでまとめたフィードを更新する間隔(秒)。未指定時：3600秒 |
+| RSSPACK_FEED_FETCH_INTERVAL | (Interval in seconds for fetching feeds you subscribe (Default: 3600)) |
+| RSSPACK_PACK_RSS_CREATE_INTERVAL | (Interval in seconds for updating your packed feed (Default: 3600)) |
 
-以下のコマンドを実行します。
+Run the following commands:
 ```
 $ git push heroku master
 $ heroku run bin/rails db:migrate
